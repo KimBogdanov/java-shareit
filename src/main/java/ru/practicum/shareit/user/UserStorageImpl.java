@@ -1,21 +1,21 @@
 package ru.practicum.shareit.user;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
+import java.util.*;
+
+@Repository
 public class UserStorageImpl implements UserStorage {
     private Integer counter = 1;
     private final Map<Integer, User> repository = new HashMap<>();
 
     @Override
     public Optional<User> findById(Integer id) {
-        return Optional.of(repository.get(id));
+        return Optional.ofNullable(repository.get(id));
     }
 
     @Override
-    public Iterable<User> findAll() {
+    public List<User> findAll() {
         return new ArrayList<>(repository.values());
     }
 
@@ -28,8 +28,8 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public User deleteById(Integer id) {
-        return repository.remove(id);
+    public Optional<User> deleteById(Integer id) {
+        return Optional.ofNullable(repository.remove(id));
     }
 
     @Override

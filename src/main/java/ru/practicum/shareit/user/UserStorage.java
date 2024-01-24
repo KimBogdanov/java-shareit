@@ -1,15 +1,16 @@
 package ru.practicum.shareit.user;
 
+import java.util.List;
 import java.util.Optional;
 
-interface UserStorage {
+public interface UserStorage {
     Optional<User> findById(Integer id);
 
-    Iterable<User> findAll();
+    List<User> findAll();
 
     User save(User user);
 
-    User deleteById(Integer id);
+    Optional<User> deleteById(Integer id);
 
     boolean existsById(Integer id);
 }
