@@ -14,7 +14,5 @@ public interface UserStorage {
 
     Optional<User> deleteById(Integer id);
 
-    boolean existsById(Integer id);
-
     boolean emailExist(String email);
 }

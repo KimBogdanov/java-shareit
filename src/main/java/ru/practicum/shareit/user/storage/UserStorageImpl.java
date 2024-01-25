@@ -2,7 +2,6 @@ package ru.practicum.shareit.user.storage;
 
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.*;
 
@@ -33,11 +32,6 @@ public class UserStorageImpl implements UserStorage {
     @Override
     public Optional<User> deleteById(Integer id) {
         return Optional.ofNullable(repository.remove(id));
-    }
-
-    @Override
-    public boolean existsById(Integer id) {
-        return repository.containsKey(id);
     }
 
     @Override
