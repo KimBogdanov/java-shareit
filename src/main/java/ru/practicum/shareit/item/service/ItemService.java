@@ -8,11 +8,13 @@ import java.util.List;
 public interface ItemService {
     ItemDto findItemById(Integer id);
 
-    List<ItemDto> findAllItems();
+    List<ItemDto> findAllItemsByUserId(Integer userId);
 
-    ItemDto saveItem(Item item);
+    ItemDto saveItem(Item item, Integer userId);
 
     ItemDto deleteItemById(Integer id);
 
-    ItemDto updateItem(Item item);
+    ItemDto patchItem(Item item, Integer itemId, Integer userId);
+
+    boolean existsById(Integer id);
 }

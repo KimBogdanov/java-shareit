@@ -14,7 +14,7 @@ public interface UserService {
 
     UserDto deleteUserById(Integer id);
 
-    UserDto updateUser(User user);
+    UserDto updateUser(User user, Integer id);
 
     boolean emailExist(String email);
 

@@ -47,8 +47,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(User user) {
-        User newUser = userStorage.findById(user.getId())
+    public UserDto updateUser(User user, Integer id) {
+        User newUser = userStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + user.getId()));
         if (user.getName() != null) {
             newUser.setName(user.getName());

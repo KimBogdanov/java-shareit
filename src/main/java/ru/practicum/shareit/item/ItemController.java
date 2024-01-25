@@ -16,16 +16,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-//    @GetMapping()
-//    public List<ItemDto> getAllItems() {
-//        return itemService.findAllItemDTO();
-//    }
+
+    @GetMapping()
+    public List<ItemDto> getAllItemsByUserId(@RequestHeader("X-Sharer-User-Id") Integer userId) {
+        return itemService.findAllItemsByUserId(userId);
+    }
+
+    @GetMapping("/{id}")
+    public ItemDto getItem(@PathVariable Integer id) {
+        return itemService.findItemById(id);
+    }
 
     @PostMapping
     public ItemDto saveItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
                             @Valid @RequestBody Item item) {
         log.info("Save item name: {}, owner id: {}", item.getName(), userId);
-        item.setOwnerId(userId);
-        return itemService.saveItem(item);
+        return itemService.saveItem(item, userId);
+    }
+
+    @PatchMapping("/{itemId}")
+    public ItemDto patchItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                             @PathVariable Integer itemId,
+                             @RequestBody Item item) {
+        log.info("Patch item name: {}, owner id: {}", item.getId(), userId);
+        return itemService.patchItem(item, itemId, userId);
     }
 }
