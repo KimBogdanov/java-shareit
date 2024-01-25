@@ -66,4 +66,9 @@ public class UserServiceImpl implements UserService {
     public boolean emailExist(String email) {
         return userStorage.emailExist(email);
     }
+
+    @Override
+    public boolean userExistsById(Integer id) {
+        return userStorage.existsById(id);
+    }
 }

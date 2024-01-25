@@ -1,9 +1,11 @@
 package ru.practicum.shareit.item.storage;
 
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
 
+@Repository
 public class ItemStorageImpl implements ItemStorage {
     private Integer counter = 1;
     private final Map<Integer, Item> repository = new HashMap<>();

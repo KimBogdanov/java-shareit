@@ -17,4 +17,6 @@ public interface UserService {
     UserDto updateUser(User user);
 
     boolean emailExist(String email);
+
+    boolean userExistsById(Integer id);
 }

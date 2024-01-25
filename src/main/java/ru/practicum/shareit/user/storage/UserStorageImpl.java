@@ -35,6 +35,11 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
+    public boolean existsById(Integer id) {
+        return repository.containsKey(id);
+    }
+
+    @Override
     public boolean emailExist(String email) {
         return repository.values().stream()
                 .anyMatch(user -> user.getEmail().equals(email));
