@@ -5,12 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
-    Integer id;
-    String name;
-    String email;
+    private Integer id;
+    private String name;
+    @Email
+    @NotBlank
+    private String email;
 }

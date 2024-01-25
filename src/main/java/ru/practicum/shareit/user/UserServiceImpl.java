@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    UserStorage userStorage;
+    private final UserStorage userStorage;
 
     @Override
     public User findUserById(Integer id) {
@@ -24,8 +24,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(User user) {
-        if (user.getId() != null) {
-            throw new AlreadyExistsException("User with id " + user.getId() + " already exists");
+        if (emailExist(user.getEmail())) {
+            throw new AlreadyExistsException("User with email " + user.getEmail() + " already exists");
         }
         return userStorage.save(user);
     }
@@ -37,14 +37,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(User user) {
-        if (!userExistsById(user.id)) {
-            throw new NotFoundException("User not found with id: " + user.getId());
+        User newUser = userStorage.findById(user.getId())
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + user.getId()));
+        if (user.getName() != null) {
+            newUser.setName(user.getName());
         }
-        return userStorage.save(user);
+        if (user.getEmail() != null && !newUser.getEmail().equals(user.getEmail())) {
+            if (emailExist(user.getEmail())) {
+                throw new AlreadyExistsException("User with id " + user.getId() + " already exists");
+            }
+            newUser.setEmail(user.getEmail());
+        }
+        return userStorage.save(newUser);
     }
 
     @Override
-    public boolean userExistsById(Integer id) {
-        return userStorage.existsById(id);
+    public boolean emailExist(String email) {
+        return userStorage.emailExist(email);
     }
 }

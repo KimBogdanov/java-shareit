@@ -21,10 +21,11 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User save(User user) {
-        if (user.getId() == 0) {
+        if (user.getId() == null) {
             user.setId(counter++);
         }
-        return repository.put(user.id, user);
+        repository.put(user.getId(), user);
+        return user;
     }
 
     @Override
@@ -35,5 +36,11 @@ public class UserStorageImpl implements UserStorage {
     @Override
     public boolean existsById(Integer id) {
         return repository.containsKey(id);
+    }
+
+    @Override
+    public boolean emailExist(String email) {
+        return repository.values().stream()
+                .anyMatch(user -> user.getEmail().equals(email));
     }
 }
