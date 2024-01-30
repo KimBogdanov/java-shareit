@@ -33,7 +33,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> findAllItemsByUserId(Integer userId) {
         validateUserExists(userId);
-        
         return itemStorage.findAll().stream()
                 .filter(user -> Objects.equals(user.getOwnerId(), userId))
                 .map(ItemMapper::toItemDto)
@@ -43,7 +42,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto saveItem(Item item, Integer userId) {
         validateUserExists(userId);
-
         item.setOwnerId(userId);
         return ItemMapper.toItemDto(itemStorage.save(item));
     }
@@ -56,14 +54,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto patchItem(Item item, Integer itemId, Integer userId) {
         validateUserExists(userId);
-
         Item newItem = itemStorage.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item not found if: " + itemId));
-
         if (!newItem.getOwnerId().equals(userId)) {
             throw new NotBelongToUser("Item id = " + itemId + " does not belong to user userId = " + userId);
         }
-
         if (item.getName() != null) {
             newItem.setName(item.getName());
         }
@@ -73,14 +68,12 @@ public class ItemServiceImpl implements ItemService {
         if (item.getAvailable() != null) {
             newItem.setAvailable(item.getAvailable());
         }
-
         return ItemMapper.toItemDto(itemStorage.save(newItem));
     }
 
     @Override
     public List<ItemDto> searchByString(String text, Integer userId) {
         validateUserExists(userId);
-
         if (text.isEmpty()) {
             return Collections.emptyList();
         }
