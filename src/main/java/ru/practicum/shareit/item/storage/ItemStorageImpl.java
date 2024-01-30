@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class ItemStorageImpl implements ItemStorage {
@@ -32,6 +33,15 @@ public class ItemStorageImpl implements ItemStorage {
     @Override
     public Optional<Item> deleteById(Integer id) {
         return Optional.ofNullable(repository.remove(id));
+    }
+
+    @Override
+    public List<Item> findByString(String text) {
+        return repository.values().stream()
+                .filter(Item::getAvailable)
+                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase()) ||
+                        item.getDescription().toLowerCase().contains(text.toLowerCase()))
+                .collect(Collectors.toList());
     }
 
     @Override

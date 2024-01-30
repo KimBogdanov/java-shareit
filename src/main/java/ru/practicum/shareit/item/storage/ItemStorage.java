@@ -15,4 +15,6 @@ public interface ItemStorage {
     Optional<Item> deleteById(Integer id);
 
     boolean existsById(Integer id);
+
+    List<Item> findByString(String text);
 }

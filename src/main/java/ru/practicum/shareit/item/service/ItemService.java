@@ -17,4 +17,6 @@ public interface ItemService {
     ItemDto patchItem(Item item, Integer itemId, Integer userId);
 
     boolean existsById(Integer id);
+
+    List<ItemDto> searchByString(String text, Integer userId);
 }

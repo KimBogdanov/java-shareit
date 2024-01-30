@@ -11,6 +11,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -31,9 +32,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> findAllItemsByUserId(Integer userId) {
-        if (!userService.userExistsById(userId)) {
-            throw new NotFoundException("User not found with id: " + userId);
-        }
+        validateUserExists(userId);
+        
         return itemStorage.findAll().stream()
                 .filter(user -> Objects.equals(user.getOwnerId(), userId))
                 .map(ItemMapper::toItemDto)
@@ -42,9 +42,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto saveItem(Item item, Integer userId) {
-        if (!userService.userExistsById(userId)) {
-            throw new NotFoundException("User not found with id: " + userId);
-        }
+        validateUserExists(userId);
+
         item.setOwnerId(userId);
         return ItemMapper.toItemDto(itemStorage.save(item));
     }
@@ -56,14 +55,15 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto patchItem(Item item, Integer itemId, Integer userId) {
-        if (!userService.userExistsById(userId)) {
-            throw new NotFoundException("User not found with id: " + userId);
-        }
+        validateUserExists(userId);
+
         Item newItem = itemStorage.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item not found if: " + itemId));
+
         if (!newItem.getOwnerId().equals(userId)) {
             throw new NotBelongToUser("Item id = " + itemId + " does not belong to user userId = " + userId);
         }
+
         if (item.getName() != null) {
             newItem.setName(item.getName());
         }
@@ -73,11 +73,30 @@ public class ItemServiceImpl implements ItemService {
         if (item.getAvailable() != null) {
             newItem.setAvailable(item.getAvailable());
         }
+
         return ItemMapper.toItemDto(itemStorage.save(newItem));
+    }
+
+    @Override
+    public List<ItemDto> searchByString(String text, Integer userId) {
+        validateUserExists(userId);
+
+        if (text.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return itemStorage.findByString(text).stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public boolean existsById(Integer id) {
         return itemStorage.existsById(id);
+    }
+
+    private void validateUserExists(Integer userId) {
+        if (!userService.userExistsById(userId)) {
+            throw new NotFoundException("User not found with id: " + userId);
+        }
     }
 }
