@@ -45,6 +45,13 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
+    public List<Item> findAllByUserId(Integer userId) {
+        return repository.values().stream()
+                .filter(item -> Objects.equals(item.getOwnerId(), userId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public boolean existsById(Integer id) {
         return repository.containsKey(id);
     }

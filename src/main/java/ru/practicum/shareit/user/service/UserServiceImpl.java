@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
         if (emailExist(userDto.getEmail())) {
             throw new AlreadyExistsException("User with email " + userDto.getEmail() + " already exists");
         }
-        return UserMapper.toUserDto(userStorage.save(UserMapper.ToUser(userDto)));
+        return UserMapper.toUserDto(userStorage.save(UserMapper.toUser(userDto)));
     }
 
     @Override

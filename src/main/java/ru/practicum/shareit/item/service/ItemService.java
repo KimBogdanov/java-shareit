@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
@@ -10,11 +9,11 @@ public interface ItemService {
 
     List<ItemDto> findAllItemsByUserId(Integer userId);
 
-    ItemDto saveItem(Item item, Integer userId);
+    ItemDto saveItem(ItemDto itemDto, Integer userId);
 
     ItemDto deleteItemById(Integer id);
 
-    ItemDto patchItem(Item item, Integer itemId, Integer userId);
+    ItemDto patchItem(ItemDto itemDto, Integer itemId, Integer userId);
 
     boolean existsById(Integer id);
 

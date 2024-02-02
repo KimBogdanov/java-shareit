@@ -17,4 +17,6 @@ public interface ItemStorage {
     boolean existsById(Integer id);
 
     List<Item> findByString(String text);
+
+    List<Item> findAllByUserId(Integer userId);
 }

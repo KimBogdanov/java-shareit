@@ -13,7 +13,6 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,47 +25,48 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto findItemById(Integer id) {
         Item item = itemStorage.findById(id)
-                .orElseThrow(() -> new NotFoundException("Item not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Item not found id: " + id));
         return ItemMapper.toItemDto(item);
     }
 
     @Override
     public List<ItemDto> findAllItemsByUserId(Integer userId) {
         validateUserExists(userId);
-        return itemStorage.findAll().stream()
-                .filter(user -> Objects.equals(user.getOwnerId(), userId))
+        return itemStorage.findAllByUserId(userId).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ItemDto saveItem(Item item, Integer userId) {
+    public ItemDto saveItem(ItemDto itemDto, Integer userId) {
         validateUserExists(userId);
+        Item item = ItemMapper.toItem(itemDto);
         item.setOwnerId(userId);
         return ItemMapper.toItemDto(itemStorage.save(item));
     }
 
     @Override
     public ItemDto deleteItemById(Integer id) {
-        return null;
+        Item item = itemStorage.deleteById(id).orElseThrow(() -> new NotFoundException("Item not found id: " + id));
+        return ItemMapper.toItemDto(item);
     }
 
     @Override
-    public ItemDto patchItem(Item item, Integer itemId, Integer userId) {
+    public ItemDto patchItem(ItemDto itemDto, Integer itemId, Integer userId) {
         validateUserExists(userId);
         Item newItem = itemStorage.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Item not found if: " + itemId));
+                .orElseThrow(() -> new NotFoundException("Item not found id: " + itemId));
         if (!newItem.getOwnerId().equals(userId)) {
             throw new NotBelongToUser("Item id = " + itemId + " does not belong to user userId = " + userId);
         }
-        if (item.getName() != null) {
-            newItem.setName(item.getName());
+        if (itemDto.getName() != null) {
+            newItem.setName(itemDto.getName());
         }
-        if (item.getDescription() != null) {
-            newItem.setDescription(item.getDescription());
+        if (itemDto.getDescription() != null) {
+            newItem.setDescription(itemDto.getDescription());
         }
-        if (item.getAvailable() != null) {
-            newItem.setAvailable(item.getAvailable());
+        if (itemDto.getAvailable() != null) {
+            newItem.setAvailable(itemDto.getAvailable());
         }
         return ItemMapper.toItemDto(itemStorage.save(newItem));
     }
@@ -89,7 +89,7 @@ public class ItemServiceImpl implements ItemService {
 
     private void validateUserExists(Integer userId) {
         if (!userService.userExistsById(userId)) {
-            throw new NotFoundException("User not found with id: " + userId);
+            throw new NotFoundException("User not found id: " + userId);
         }
     }
 }
