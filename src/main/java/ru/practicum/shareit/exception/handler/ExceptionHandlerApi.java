@@ -17,7 +17,7 @@ public class ExceptionHandlerApi {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(e.getClass().getSimpleName(), e.getMessage()));
+                .body(new ErrorResponse("Not found", e.getMessage()));
     }
 
     @ExceptionHandler()
@@ -25,6 +25,6 @@ public class ExceptionHandlerApi {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(e.getClass().getSimpleName(), e.getMessage()));
+                .body(new ErrorResponse("NotBelongToUser", e.getMessage()));
     }
 }

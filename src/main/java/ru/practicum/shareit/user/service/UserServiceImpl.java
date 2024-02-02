@@ -32,11 +32,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto saveUser(User user) {
-        if (emailExist(user.getEmail())) {
-            throw new AlreadyExistsException("User with email " + user.getEmail() + " already exists");
+    public UserDto saveUser(UserDto userDto) {
+        if (emailExist(userDto.getEmail())) {
+            throw new AlreadyExistsException("User with email " + userDto.getEmail() + " already exists");
         }
-        return UserMapper.toUserDto(userStorage.save(user));
+        return UserMapper.toUserDto(userStorage.save(UserMapper.ToUser(userDto)));
     }
 
     @Override
@@ -47,23 +47,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(User user, Integer id) {
+    public UserDto updateUser(UserDto userDto, Integer id) {
         User newUser = userStorage.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + user.getId()));
-        if (user.getName() != null) {
-            newUser.setName(user.getName());
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + userDto.getId()));
+        if (userDto.getName() != null) {
+            newUser.setName(userDto.getName());
         }
-        if (user.getEmail() != null && !newUser.getEmail().equals(user.getEmail())) {
-            if (emailExist(user.getEmail())) {
-                throw new AlreadyExistsException("This email " + user.getEmail() + " already use other user");
+        if (userDto.getEmail() != null && !newUser.getEmail().equals(userDto.getEmail())) {
+            if (emailExist(userDto.getEmail())) {
+                throw new AlreadyExistsException("This email " + userDto.getEmail() + " already use other user");
             }
-            newUser.setEmail(user.getEmail());
+            newUser.setEmail(userDto.getEmail());
         }
         return UserMapper.toUserDto(userStorage.save(newUser));
     }
 
-    @Override
-    public boolean emailExist(String email) {
+    private boolean emailExist(String email) {
         return userStorage.emailExist(email);
     }
 

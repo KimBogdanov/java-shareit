@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ItemDto {
-    Integer id;
-    String name;
-    String description;
-    boolean available;
+    private Integer id;
+    private String name;
+    private String description;
+    private boolean available;
 }
