@@ -23,14 +23,14 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
 
     @Override
-    public ItemDto findItemById(Integer id) {
+    public ItemDto findItemById(Long id) {
         Item item = itemStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("Item not found id: " + id));
         return ItemMapper.toItemDto(item);
     }
 
     @Override
-    public List<ItemDto> findAllItemsByUserId(Integer userId) {
+    public List<ItemDto> findAllItemsByUserId(Long userId) {
         validateUserExists(userId);
         return itemStorage.findAllByUserId(userId).stream()
                 .map(ItemMapper::toItemDto)
@@ -38,7 +38,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto saveItem(ItemDto itemDto, Integer userId) {
+    public ItemDto saveItem(ItemDto itemDto, Long userId) {
         validateUserExists(userId);
         Item item = ItemMapper.toItem(itemDto);
         item.setOwnerId(userId);
@@ -46,13 +46,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto deleteItemById(Integer id) {
+    public ItemDto deleteItemById(Long id) {
         Item item = itemStorage.deleteById(id).orElseThrow(() -> new NotFoundException("Item not found id: " + id));
         return ItemMapper.toItemDto(item);
     }
 
     @Override
-    public ItemDto patchItem(ItemDto itemDto, Integer itemId, Integer userId) {
+    public ItemDto patchItem(ItemDto itemDto, Long itemId, Long userId) {
         validateUserExists(userId);
         Item newItem = itemStorage.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item not found id: " + itemId));
@@ -72,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchByString(String text, Integer userId) {
+    public List<ItemDto> searchByString(String text, Long userId) {
         validateUserExists(userId);
         if (text.isEmpty()) {
             return Collections.emptyList();
@@ -83,11 +83,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public boolean existsById(Integer id) {
+    public boolean existsById(Long id) {
         return itemStorage.existsById(id);
     }
 
-    private void validateUserExists(Integer userId) {
+    private void validateUserExists(Long userId) {
         if (!userService.userExistsById(userId)) {
             throw new NotFoundException("User not found id: " + userId);
         }

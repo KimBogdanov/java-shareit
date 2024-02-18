@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
     @Override
-    public UserDto findUserById(Integer id) {
+    public UserDto findUserById(Long id) {
         User user = userStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
         return UserMapper.toUserDto(user);
@@ -40,14 +40,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto deleteUserById(Integer id) {
+    public UserDto deleteUserById(Long id) {
         User user = userStorage.deleteById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
         return UserMapper.toUserDto(user);
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto, Integer id) {
+    public UserDto updateUser(UserDto userDto, Long id) {
         User newUser = userStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + userDto.getId()));
         if (userDto.getName() != null) {
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean userExistsById(Integer id) {
+    public boolean userExistsById(Long id) {
         return userStorage.existsById(id);
     }
 }

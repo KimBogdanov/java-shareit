@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ItemStorage {
-    Optional<Item> findById(Integer id);
+    Optional<Item> findById(Long id);
 
     List<Item> findAll();
 
     Item save(Item item);
 
-    Optional<Item> deleteById(Integer id);
+    Optional<Item> deleteById(Long id);
 
-    boolean existsById(Integer id);
+    boolean existsById(Long id);
 
     List<Item> findByString(String text);
 
-    List<Item> findAllByUserId(Integer userId);
+    List<Item> findAllByUserId(Long userId);
 }

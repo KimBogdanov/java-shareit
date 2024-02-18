@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 
 @Repository
 public class ItemStorageImpl implements ItemStorage {
-    private Integer counter = 1;
-    private final Map<Integer, Item> repository = new HashMap<>();
+    private Long counter = 1L;
+    private final Map<Long, Item> repository = new HashMap<>();
 
     @Override
-    public Optional<Item> findById(Integer id) {
+    public Optional<Item> findById(Long id) {
         return Optional.ofNullable(repository.get(id));
     }
 
@@ -31,7 +31,7 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public Optional<Item> deleteById(Integer id) {
+    public Optional<Item> deleteById(Long id) {
         return Optional.ofNullable(repository.remove(id));
     }
 
@@ -45,14 +45,14 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public List<Item> findAllByUserId(Integer userId) {
+    public List<Item> findAllByUserId(Long userId) {
         return repository.values().stream()
                 .filter(item -> Objects.equals(item.getOwnerId(), userId))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public boolean existsById(Integer id) {
+    public boolean existsById(Long id) {
         return repository.containsKey(id);
     }
 }

@@ -7,11 +7,11 @@ import java.util.*;
 
 @Repository
 public class UserStorageImpl implements UserStorage {
-    private Integer counter = 1;
-    private final Map<Integer, User> repository = new HashMap<>();
+    private Long counter = 1L;
+    private final Map<Long, User> repository = new HashMap<>();
 
     @Override
-    public Optional<User> findById(Integer id) {
+    public Optional<User> findById(Long id) {
         return Optional.ofNullable(repository.get(id));
     }
 
@@ -30,12 +30,12 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public Optional<User> deleteById(Integer id) {
+    public Optional<User> deleteById(Long id) {
         return Optional.ofNullable(repository.remove(id));
     }
 
     @Override
-    public boolean existsById(Integer id) {
+    public boolean existsById(Long id) {
         return repository.containsKey(id);
     }
 

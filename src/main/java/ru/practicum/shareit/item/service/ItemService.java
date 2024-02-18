@@ -5,17 +5,17 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import java.util.List;
 
 public interface ItemService {
-    ItemDto findItemById(Integer id);
+    ItemDto findItemById(Long id);
 
-    List<ItemDto> findAllItemsByUserId(Integer userId);
+    List<ItemDto> findAllItemsByUserId(Long userId);
 
-    ItemDto saveItem(ItemDto itemDto, Integer userId);
+    ItemDto saveItem(ItemDto itemDto, Long userId);
 
-    ItemDto deleteItemById(Integer id);
+    ItemDto deleteItemById(Long id);
 
-    ItemDto patchItem(ItemDto itemDto, Integer itemId, Integer userId);
+    ItemDto patchItem(ItemDto itemDto, Long itemId, Long userId);
 
-    boolean existsById(Integer id);
+    boolean existsById(Long id);
 
-    List<ItemDto> searchByString(String text, Integer userId);
+    List<ItemDto> searchByString(String text, Long userId);
 }
