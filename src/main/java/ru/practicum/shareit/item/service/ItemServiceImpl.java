@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotBelongToUser;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
     private final UserService userService;
@@ -32,11 +34,12 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> findAllItemsByUserId(Long userId) {
         validateUserExists(userId);
-        return itemStorage.findAllByUserId(userId).stream()
+        return itemStorage.findAllByOwnerId(userId).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public ItemDto saveItem(ItemDto itemDto, Long userId) {
         validateUserExists(userId);
@@ -45,12 +48,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(itemStorage.save(item));
     }
 
-    @Override
-    public ItemDto deleteItemById(Long id) {
-        Item item = itemStorage.deleteById(id).orElseThrow(() -> new NotFoundException("Item not found id: " + id));
-        return ItemMapper.toItemDto(item);
-    }
-
+    @Transactional
     @Override
     public ItemDto patchItem(ItemDto itemDto, Long itemId, Long userId) {
         validateUserExists(userId);
@@ -71,20 +69,16 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(itemStorage.save(newItem));
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> searchByString(String text, Long userId) {
+    public List<ItemDto> searchByString(String keyword, Long userId) {
         validateUserExists(userId);
-        if (text.isEmpty()) {
+        if (keyword.isEmpty()) {
             return Collections.emptyList();
         }
-        return itemStorage.findByString(text).stream()
+        return itemStorage.findByDescriptionOrNameAndAvailable(keyword).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean existsById(Long id) {
-        return itemStorage.existsById(id);
     }
 
     private void validateUserExists(Long userId) {

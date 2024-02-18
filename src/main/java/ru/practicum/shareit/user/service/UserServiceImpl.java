@@ -36,11 +36,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto saveUser(UserDto userDto) {
-        if (emailExist(userDto.getEmail())) {
-            throw new AlreadyExistsException("User with email " + userDto.getEmail() + " already exists");
-        }
         return UserMapper.toUserDto(userStorage.save(UserMapper.toUser(userDto)));
     }
+
     @Transactional
     @Override
     public void deleteUserById(Long id) {
@@ -49,6 +47,7 @@ public class UserServiceImpl implements UserService {
         }
         userStorage.deleteById(id);
     }
+
     @Transactional
     @Override
     public UserDto updateUser(UserDto userDto, Long id) {
