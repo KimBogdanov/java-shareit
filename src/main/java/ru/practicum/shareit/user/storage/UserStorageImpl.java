@@ -1,12 +1,10 @@
 package ru.practicum.shareit.user.storage;
 
-import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
 
-@Repository
-public class UserStorageImpl implements UserStorage {
+public abstract class UserStorageImpl implements UserStorage {
     private Long counter = 1L;
     private final Map<Long, User> repository = new HashMap<>();
 
@@ -30,8 +28,8 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public Optional<User> deleteById(Long id) {
-        return Optional.ofNullable(repository.remove(id));
+    public void deleteById(Long id) {
+        repository.remove(id);
     }
 
     @Override

@@ -1,9 +1,11 @@
 package ru.practicum.shareit.user.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
 
+@Transactional(readOnly = true)
 public interface UserService {
     UserDto findUserById(Long id);
 
@@ -11,7 +13,7 @@ public interface UserService {
 
     UserDto saveUser(UserDto userDto);
 
-    UserDto deleteUserById(Long id);
+    void deleteUserById(Long id);
 
     UserDto updateUser(UserDto userDto, Long id);
 

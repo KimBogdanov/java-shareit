@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
@@ -31,6 +33,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public UserDto saveUser(UserDto userDto) {
         if (emailExist(userDto.getEmail())) {
@@ -38,14 +41,15 @@ public class UserServiceImpl implements UserService {
         }
         return UserMapper.toUserDto(userStorage.save(UserMapper.toUser(userDto)));
     }
-
+    @Transactional
     @Override
-    public UserDto deleteUserById(Long id) {
-        User user = userStorage.deleteById(id)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-        return UserMapper.toUserDto(user);
+    public void deleteUserById(Long id) {
+        if (!userExistsById(id)) {
+            throw new NotFoundException("User not found with id: " + id);
+        }
+        userStorage.deleteById(id);
     }
-
+    @Transactional
     @Override
     public UserDto updateUser(UserDto userDto, Long id) {
         User newUser = userStorage.findById(id)

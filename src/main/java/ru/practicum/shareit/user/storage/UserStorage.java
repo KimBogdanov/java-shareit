@@ -1,20 +1,13 @@
 package ru.practicum.shareit.user.storage;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserStorage {
-    Optional<User> findById(Long id);
-
-    List<User> findAll();
-
-    User save(User user);
-
-    Optional<User> deleteById(Long id);
-
+public interface UserStorage extends JpaRepository<User, Long> {
+    @Query(value = "SELECT COUNT(u) > 0 FROM User AS u WHERE u.email = ?1")
     boolean emailExist(String email);
-
-    boolean existsById(Long id);
 }
