@@ -27,7 +27,7 @@ public class ExceptionHandlerApi {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("NotBelongToUser", e.getMessage()));
+                .body(new ErrorResponse("Not Belong To User", e.getMessage()));
     }
 
     @ExceptionHandler()
@@ -35,7 +35,7 @@ public class ExceptionHandlerApi {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("AlreadyExist", e.getMessage()));
+                .body(new ErrorResponse("Already Exist", e.getMessage()));
     }
 
     @ExceptionHandler()
@@ -43,6 +43,6 @@ public class ExceptionHandlerApi {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("MethodArgumentNotValid", e.getMessage()));
+                .body(new ErrorResponse("Method Argument Not Valid", e.getMessage()));
     }
 }

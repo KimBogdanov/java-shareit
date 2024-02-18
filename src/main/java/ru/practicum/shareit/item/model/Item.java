@@ -19,7 +19,7 @@ public class Item {
     private Long id;
     @Column(length = 255, nullable = false)
     private String name;
-    @Column(length = 1000)
+    @Column(length = 2000)
     private String description;
     @Column(name = "is_available")
     private Boolean available;
