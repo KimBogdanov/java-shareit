@@ -7,7 +7,7 @@ import ru.practicum.shareit.booking.validator.EndTimeAfterStartTime;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,10 +15,13 @@ import java.time.LocalDateTime;
 @Builder
 @EndTimeAfterStartTime
 public class BookingDto {
+    private final Long id;
+    @NotNull
     @FutureOrPresent
-    private final LocalDateTime startTime;
+    private final LocalDateTime start;
+    @NotNull
     @Future
-    private final LocalDateTime endTime;
-    @NotBlank
+    private final LocalDateTime end;
+    @NotNull
     private final Long itemId;
 }

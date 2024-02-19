@@ -15,9 +15,10 @@ import javax.validation.Valid;
 public class BookingController {
     private final BookingService bookingService;
     @PostMapping
-    public BookingDto saveBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingDto saveBooking(@RequestHeader("X-Sharer-User-Id") Long bookerId,
                                   @Valid @RequestBody BookingDto bookingDto) {
+        log.info(bookingDto.toString());
         log.info("Save booking id item: {}", bookingDto.getItemId());
-        return bookingService.saveBooking(userId, bookingDto);
+        return bookingService.saveBooking(bookerId, bookingDto);
     }
 }

@@ -1,15 +1,13 @@
 package ru.practicum.shareit.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.AlreadyExistsException;
-import ru.practicum.shareit.exception.ErrorResponse;
-import ru.practicum.shareit.exception.NotBelongToUser;
-import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -44,5 +42,21 @@ public class ExceptionHandlerApi {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("Method Argument Not Valid", e.getMessage()));
+    }
+
+    @ExceptionHandler()
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(final ConstraintViolationException e) {
+        log.error(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("Constraint Violation Exception", e.getMessage()));
+    }
+
+    @ExceptionHandler()
+    public ResponseEntity<ErrorResponse> handleNotAvailableException(final NotAvailableException e) {
+        log.error(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("Constraint Violation Exception", e.getMessage()));
     }
 }

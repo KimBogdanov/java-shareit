@@ -4,7 +4,6 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.lang.annotation.Annotation;
 
 public class EndTimeAfterStartTimeValidator implements ConstraintValidator<EndTimeAfterStartTime, BookingDto> {
     @Override
@@ -16,7 +15,6 @@ public class EndTimeAfterStartTimeValidator implements ConstraintValidator<EndTi
         if (bookingDto == null) {
             return true;
         }
-
-        return bookingDto.getEndTime().isAfter(bookingDto.getStartTime());
+        return bookingDto.getEnd().isAfter(bookingDto.getStart());
     }
 }
