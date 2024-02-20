@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingWithItemDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
@@ -15,10 +16,16 @@ import javax.validation.Valid;
 public class BookingController {
     private final BookingService bookingService;
     @PostMapping
-    public BookingDto saveBooking(@RequestHeader("X-Sharer-User-Id") Long bookerId,
+    public BookingWithItemDto saveBooking(@RequestHeader("X-Sharer-User-Id") Long bookerId,
                                   @Valid @RequestBody BookingDto bookingDto) {
-        log.info(bookingDto.toString());
         log.info("Save booking id item: {}", bookingDto.getItemId());
         return bookingService.saveBooking(bookerId, bookingDto);
+    }
+    @PatchMapping("/{bookingId}")
+    public BookingWithItemDto approvedBooking(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+                                                         @PathVariable Long bookingId,
+                                                         @RequestParam boolean approved) {
+        log.info("Booking id: {} is {} owner id: {}", bookingId, approved, ownerId);
+        return bookingService.approved(ownerId, bookingId, approved);
     }
 }

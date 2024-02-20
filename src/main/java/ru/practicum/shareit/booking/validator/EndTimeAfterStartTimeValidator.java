@@ -12,7 +12,7 @@ public class EndTimeAfterStartTimeValidator implements ConstraintValidator<EndTi
 
     @Override
     public boolean isValid(BookingDto bookingDto, ConstraintValidatorContext constraintValidatorContext) {
-        if (bookingDto == null) {
+        if (bookingDto == null || bookingDto.getStart() == null || bookingDto.getEnd() == null) {
             return true;
         }
         return bookingDto.getEnd().isAfter(bookingDto.getStart());

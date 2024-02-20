@@ -7,7 +7,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.storage.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -17,18 +17,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Override
     public UserDto findUserById(Long id) {
-        User user = userStorage.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public List<UserDto> findAllUsers() {
-        return userStorage.findAll().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto saveUser(UserDto userDto) {
-        return UserMapper.toUserDto(userStorage.save(UserMapper.toUser(userDto)));
+        return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
     }
 
     @Transactional
@@ -45,13 +45,13 @@ public class UserServiceImpl implements UserService {
         if (!userExistsById(id)) {
             throw new NotFoundException("User not found with id: " + id);
         }
-        userStorage.deleteById(id);
+        userRepository.deleteById(id);
     }
 
     @Transactional
     @Override
     public UserDto updateUser(UserDto userDto, Long id) {
-        User newUser = userStorage.findById(id)
+        User newUser = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + userDto.getId()));
         if (userDto.getName() != null) {
             newUser.setName(userDto.getName());
@@ -62,15 +62,15 @@ public class UserServiceImpl implements UserService {
             }
             newUser.setEmail(userDto.getEmail());
         }
-        return UserMapper.toUserDto(userStorage.save(newUser));
+        return UserMapper.toUserDto(userRepository.save(newUser));
     }
 
     private boolean emailExist(String email) {
-        return userStorage.emailExist(email);
+        return userRepository.emailExist(email);
     }
 
     @Override
     public boolean userExistsById(Long id) {
-        return userStorage.existsById(id);
+        return userRepository.existsById(id);
     }
 }
