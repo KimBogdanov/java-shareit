@@ -48,7 +48,7 @@ public class ExceptionHandlerApi {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("Method Argument Not Valid", e.getMessage()));
+                .body(new ErrorResponse("Method Argument Not Valid", errorMessages.toString()));
     }
 
     @ExceptionHandler()
@@ -71,7 +71,7 @@ public class ExceptionHandlerApi {
     public ResponseEntity<ErrorResponse> handleNotOwnedException(final NotOwnedException e) {
         log.error(e.getMessage());
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse("Not Owned Exception", e.getMessage()));
     }
 
@@ -81,5 +81,21 @@ public class ExceptionHandlerApi {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse("Booking Expired Exception", e.getMessage()));
+    }
+
+    @ExceptionHandler()
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(final IllegalArgumentException e) {
+        log.error(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(e.getLocalizedMessage(), "Illegal Argument Exception"));
+    }
+
+    @ExceptionHandler()
+    public ResponseEntity<ErrorResponse> handleInvalidStatusException(final InvalidStatusException e) {
+        log.error(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(e.getLocalizedMessage(), "Invalid Status Exception"));
     }
 }

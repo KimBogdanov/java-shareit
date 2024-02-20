@@ -26,7 +26,7 @@ public class Booking {
     @ToString.Exclude
     @JoinColumn(name = "booker_id", nullable = false)
     private User booker;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @ToString.Exclude
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
