@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS users, items, bookings;
+DROP TABLE IF EXISTS users, items, bookings, comments;
 
 CREATE TABLE IF NOT EXISTS users (
     id                  BIGINT                          GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -22,4 +22,12 @@ CREATE TABLE IF NOT EXISTS bookings (
     booker_id           BIGINT                          NOT NULL REFERENCES users(id),
     item_id             BIGINT                          NOT NULL REFERENCES items(id),
     status              VARCHAR(20)                     NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+    id                  BIGINT                          GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    text                VARCHAR(2000)                   NOT NULL,
+    item_id             BIGINT                          NOT NULL REFERENCES items(id),
+    user_id             BIGINT                          NOT NULL REFERENCES users(id),
+    created             TIMESTAMP WITHOUT TIME ZONE     NOT NULL
 );

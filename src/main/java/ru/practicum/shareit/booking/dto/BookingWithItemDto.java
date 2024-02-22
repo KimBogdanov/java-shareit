@@ -31,6 +31,5 @@ public class BookingWithItemDto {
     public static class ItemNameDto {
         private final Long id;
         private final String name;
-
     }
 }

@@ -3,6 +3,10 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.comment.dto.CommentCreateDto;
+import ru.practicum.shareit.item.comment.service.CommentService;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
+import ru.practicum.shareit.item.dto.ItemBookingProjection;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -15,15 +19,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private final CommentService commentService;
 
     /**
-     * Получение списка всех вещей для пользователя по его идентификатору.
+     * Получение списка всех вещей пользователя по его идентификатору.
      *
      * @param userId Идентификатор пользователя-владельца вещей.
      * @return Список объектов {@link ItemDto}, описывающих вещи пользователя.
      */
     @GetMapping()
-    public List<ItemDto> getAllItemsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemBookingProjection> getAllItemsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("Get all the user's items. User id: {}", userId);
         return itemService.findAllItemsByUserId(userId);
     }
 
@@ -31,11 +37,13 @@ public class ItemController {
      * Получение информации о конкретной вещи по её идентификатору.
      *
      * @param id Идентификатор вещи.
-     * @return Объект {@link ItemDto}, описывающий вещь.
+     * @return Объект {@link ItemBookingDto}, описывающий вещь.
      */
     @GetMapping("/{id}")
-    public ItemDto getItem(@PathVariable Long id) {
-        return itemService.findItemById(id);
+    public ItemBookingDto getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                  @PathVariable Long id) {
+        log.info("Get item id {} for user id {}", id, userId);
+        return itemService.getItemDtoById(id, userId);
     }
 
     /**
@@ -80,5 +88,12 @@ public class ItemController {
                              @RequestBody ItemDto itemDto) {
         log.info("Patch item name: {}, owner id: {}", itemDto.getId(), userId);
         return itemService.patchItem(itemDto, itemId, userId);
+    }
+    @PostMapping({"/{itemId}/comment"})
+    public CommentCreateDto saveComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                        @PathVariable Long itemId,
+                                        @Valid @RequestBody CommentCreateDto commentCreateDto) {
+        log.info("Save comment item id");
+        return commentService.saveComment(userId, itemId, commentCreateDto);
     }
 }

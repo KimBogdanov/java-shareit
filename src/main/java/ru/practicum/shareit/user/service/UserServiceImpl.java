@@ -7,7 +7,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.storage.UserRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -20,10 +20,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDto findUserById(Long id) {
-        User user = userRepository.findById(id)
+    public UserDto getUserDtoById(Long id) {
+        return UserMapper.toUserDto(getUserById(id));
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-        return UserMapper.toUserDto(user);
     }
 
     @Override

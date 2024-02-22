@@ -13,9 +13,10 @@ import ru.practicum.shareit.booking.model.enums.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +31,8 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
-    private final ItemStorage itemStorage;
+    private final ItemRepository itemRepository;
+    private final ItemService itemService;
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
     private final BookingWithItemMapper bookingWithItemMapper;
@@ -41,7 +43,7 @@ public class BookingServiceImpl implements BookingService {
         User booker = getUser(bookerId);
 
         //Проверяем, что Item существует, доступна дял бронирования и не принадлежит бронирующему
-        Item item = itemStorage.findById(bookingDto.getItemId())
+        Item item = itemRepository.findById(bookingDto.getItemId())
                 .filter(i -> !Objects.equals(i.getOwnerId(), bookerId))
                 .orElseThrow(() -> new NotFoundException("Item not found id: " + bookingDto.getItemId()));
         if (!item.getAvailable()) {
@@ -59,7 +61,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingWithItemDto approved(Long ownerId, Long bookingId, boolean approved) {
         Booking booking = getBookingById(bookingId);
         validateItem(booking);
-        validateOwner(booking, ownerId);
+        itemService.verifyOwnershipAndThrow(booking.getItem(), ownerId);
         validateBookingStatus(booking);
         booking.setStatus(approved ? Status.APPROVED : Status.REJECTED);
         Booking saveBooking = bookingRepository.save(booking);
@@ -111,7 +113,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingWithItemDto> getBookingItem(Long ownerId, Status status) {
         User owner = getUser(ownerId);
         List<Booking> bookings;
-        log.info("User.id {}, status {}",ownerId, status.toString());
+        log.info("User.id {}, status {}", ownerId, status.toString());
 
         switch (status) {
             case CURRENT:
@@ -157,7 +159,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private void validateOwner(Booking booking, Long ownerId) {
+    private void verifyOwnershipAndThrow(Booking booking, Long ownerId) {
         if (!Objects.equals(booking.getItem().getOwnerId(), ownerId)) {
             throw new NotOwnedException("Item not owned by user");
         }

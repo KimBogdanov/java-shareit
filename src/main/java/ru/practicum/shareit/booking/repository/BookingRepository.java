@@ -2,7 +2,7 @@ package ru.practicum.shareit.booking.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import ru.practicum.shareit.booking.dto.BookingWithBookerProjection;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.enums.Status;
 
@@ -66,4 +66,24 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "AND b.start >= CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
     List<Booking> findFutureBookingsByOwnerId(Long ownerId);
+
+    @Query(nativeQuery = true, value = "SELECT b.id AS id, u.id AS bookerId, b.start_time AS start, b.end_time AS end " +
+            "FROM bookings b JOIN items i ON i.id = b.item_id LEFT JOIN users u ON u.id = b.booker_id " +
+            "WHERE i.id = :itemId " +
+            "AND b.status = 'APPROVED' " +
+            "AND b.start_time < CURRENT_TIMESTAMP " +
+            "ORDER BY b.start_time DESC " +
+            "LIMIT 1")
+    BookingWithBookerProjection findLastBookingByItemId(Long itemId);
+
+    @Query(nativeQuery = true, value = "SELECT b.id AS id, u.id AS bookerId, b.start_time AS start, b.end_time AS end " +
+            "FROM bookings b " +
+            "JOIN items i ON i.id = b.item_id " +
+            "LEFT JOIN users u ON u.id = b.booker_id " +
+            "WHERE i.id = :itemId " +
+            "AND b.status = 'APPROVED' " +
+            "AND b.start_time > CURRENT_TIMESTAMP " +
+            "ORDER BY b.start_time " +
+            "LIMIT 1")
+    BookingWithBookerProjection findNextBookingByItemId(Long itemId);
 }
