@@ -25,7 +25,7 @@ public class ItemController {
      * Получение списка всех вещей пользователя по его идентификатору.
      *
      * @param userId Идентификатор пользователя-владельца вещей.
-     * @return Список объектов {@link ItemDto}, описывающих вещи пользователя.
+     * @return Список объектов {@link ItemReadDto}, описывающих вещи пользователя.
      */
     @GetMapping()
     public List<ItemReadDto> getAllItemsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
