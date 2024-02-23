@@ -89,6 +89,7 @@ public class ItemController {
         log.info("Patch item name: {}, owner id: {}", itemDto.getId(), userId);
         return itemService.patchItem(itemDto, itemId, userId);
     }
+
     @PostMapping({"/{itemId}/comment"})
     public CommentReadDto saveComment(@RequestHeader("X-Sharer-User-Id") Long userId,
                                       @PathVariable Long itemId,

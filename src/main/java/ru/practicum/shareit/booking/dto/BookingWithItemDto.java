@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Builder
 public class BookingWithItemDto {
-    
     private final Long id;
     private final LocalDateTime start;
     private final LocalDateTime end;
     private final ItemNameDto item;
     private final UserIdDto booker;
     private final Status status;
+
     @Data
     @RequiredArgsConstructor
     @Builder
