@@ -86,4 +86,28 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "ORDER BY b.start_time " +
             "LIMIT 1")
     BookingWithBookerProjection findNextBookingByItemId(Long itemId);
+
+    @Query(value = "SELECT COUNT(b) > 0 FROM Booking AS b " +
+            "WHERE b.booker.id = :userId " +
+            "AND b.item.id = :itemId " +
+            "AND b.status = 'APPROVED' " +
+            "AND b.start < CURRENT_TIMESTAMP")
+    boolean isExistPastBookingByUserIdAndItemId(Long userId, Long itemId);
+    @Query(nativeQuery = true, value = "SELECT b.id AS id, u.id AS bookerId, b.start_time AS start, b.end_time AS end " +
+            "FROM bookings b JOIN items i ON i.id = b.item_id LEFT JOIN users u ON u.id = b.booker_id " +
+            "WHERE i.id = :itemId " +
+            "AND b.status = 'APPROVED' " +
+            "AND b.start_time < CURRENT_TIMESTAMP " +
+            "ORDER BY b.start_time DESC " +
+            "LIMIT 1")
+    List<Booking> findAllLastBookingByItemId(List<Long> itemId);
+
+    @Query(nativeQuery = true, value = "SELECT b.id AS id, u.id AS bookerId, b.start_time AS start, b.end_time AS end " +
+            "FROM bookings b JOIN items i ON i.id = b.item_id LEFT JOIN users u ON u.id = b.booker_id " +
+            "WHERE i.id = :itemId " +
+            "AND b.status = 'APPROVED' " +
+            "AND b.start_time > CURRENT_TIMESTAMP " +
+            "ORDER BY b.start_time " +
+            "LIMIT 1")
+    List<Booking> findAllNextBookingByItemId(List<Long> itemId);
 }

@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.user.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    @Query(value = "SELECT COUNT(u) > 0 FROM User AS u WHERE u.email = ?1")
+    @Query(value = "SELECT COUNT(u) > 0 FROM User AS u WHERE u.email = :email")
     boolean emailExist(String email);
 }

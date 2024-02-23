@@ -7,10 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingWithBookerProjection;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.NotBelongToUser;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.NotOwnedException;
-import ru.practicum.shareit.item.dto.ItemBookingDto;
+import ru.practicum.shareit.item.comment.dto.CommentReadDto;
+import ru.practicum.shareit.item.comment.mapper.CommentReadMapper;
+import ru.practicum.shareit.item.comment.repository.CommentRepository;
+import ru.practicum.shareit.item.comment.service.CommentService;
+import ru.practicum.shareit.item.dto.ItemReadDto;
 import ru.practicum.shareit.item.dto.ItemBookingProjection;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemBookingMapper;
@@ -33,17 +36,22 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final BookingRepository bookingRepository;
     private final ItemBookingMapper itemBookingMapper;
+    private final CommentRepository commentRepository;
+    private final CommentReadMapper commentReadMapper;
 
     @Override
-    public ItemBookingDto getItemDtoById(Long itemId, Long userId) {
+    public ItemReadDto getItemDtoById(Long itemId, Long userId) {
         validateUserExists(userId);
         Item item = getItemById(itemId);
-        if (!Objects.equals(item.getOwnerId(), userId)) {
-            return itemBookingMapper.toItemBookingDto(item, null, null);
-        }
         BookingWithBookerProjection last = bookingRepository.findLastBookingByItemId(itemId);
         BookingWithBookerProjection next = bookingRepository.findNextBookingByItemId(itemId);
-        return itemBookingMapper.toItemBookingDto(item, last, next);
+        List<CommentReadDto> commentReadDtoList = commentRepository.findAllByItem_Id(itemId).stream()
+                .map(commentReadMapper::toCommentReadDto)
+                .collect(Collectors.toList());
+        if (!Objects.equals(item.getOwnerId(), userId)) {
+            return itemBookingMapper.toItemBookingDto(item, null, null, commentReadDtoList);
+        }
+        return itemBookingMapper.toItemBookingDto(item, last, next, commentReadDtoList);
     }
 
     @Override
@@ -53,9 +61,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemBookingProjection> findAllItemsByUserId(Long userId) {
-        validateUserExists(userId);
-        return itemRepository.getItemBookingProjectionsByOwnerId(userId);
+    public List<ItemReadDto> findAllItemsByUserId(Long ownerId) {
+        validateUserExists(ownerId);
+        List<Item> items = itemRepository.findAllByOwnerId(ownerId);
+        List<Long> itemsId = items.stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
+        List<Booking> lastBookings = bookingRepository.findAllLastBookingByItemId(itemsId);
+        List<Booking> nextBookings = bookingRepository.findAllNextBookingByItemId(itemsId);
+        List<CommentReadDto> commentReadDtoList = commentRepository.findAllByItem_Id(itemId).stream()
+                .map(commentReadMapper::toCommentReadDto)
+                .collect(Collectors.toList());
+        return null;
     }
 
     @Transactional

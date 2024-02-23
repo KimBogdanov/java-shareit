@@ -1,8 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.dto.ItemBookingDto;
+import ru.practicum.shareit.item.dto.ItemReadDto;
 import ru.practicum.shareit.item.dto.ItemBookingProjection;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -12,9 +11,9 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface ItemService {
     Item getItemById(Long id);
-    ItemBookingDto getItemDtoById(Long id, Long userId);
+    ItemReadDto getItemDtoById(Long id, Long userId);
 
-    List<ItemBookingProjection> findAllItemsByUserId(Long userId);
+    List<ItemReadDto> findAllItemsByUserId(Long userId);
 
     ItemDto saveItem(ItemDto itemDto, Long userId);
 
