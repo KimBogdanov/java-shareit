@@ -6,13 +6,13 @@ CREATE TABLE IF NOT EXISTS users (
     email               VARCHAR(255)                    NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS items (
-    id                  BIGINT                          GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name                VARCHAR(255)                    NOT NULL,
-    description         VARCHAR(2000),
-    is_available        BOOLEAN,
-    owner_id            BIGINT                          NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    request_id          BIGINT
+CREATE TABLE IF NOT EXISTS items(
+                                    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                    name         VARCHAR(255) NOT NULL,
+                                    description  VARCHAR(2000),
+                                    is_available BOOLEAN,
+                                    owner        BIGINT       NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+                                    request_id   BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS bookings (

@@ -5,11 +5,9 @@ import java.time.LocalDateTime;
 public interface BookingWithBookerProjection {
     Long getId();
 
-    Long getBookerId();
+    Long getItemId();
 
     LocalDateTime getStart();
 
     LocalDateTime getEnd();
 }
-
-

@@ -9,7 +9,7 @@ import java.util.List;
 public interface BookingService {
     BookingWithItemDto saveBooking(Long userId, BookingDto bookingDto);
 
-    BookingWithItemDto approved(Long ownerId, Long bookingId, boolean approved);
+    BookingWithItemDto approvedBooking(Long ownerId, Long bookingId, boolean approved);
 
     BookingWithItemDto getStatus(Long userId, Long bookingId);
 

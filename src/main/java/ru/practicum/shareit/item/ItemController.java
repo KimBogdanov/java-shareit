@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.comment.dto.CommentCreateDto;
 import ru.practicum.shareit.item.comment.dto.CommentReadDto;
 import ru.practicum.shareit.item.comment.service.CommentService;
 import ru.practicum.shareit.item.dto.ItemReadDto;
-import ru.practicum.shareit.item.dto.ItemBookingProjection;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -37,14 +36,14 @@ public class ItemController {
     /**
      * Получение информации о конкретной вещи по её идентификатору.
      *
-     * @param id Идентификатор вещи.
+     * @param itemId Идентификатор вещи.
      * @return Объект {@link ItemReadDto}, описывающий вещь.
      */
-    @GetMapping("/{id}")
-    public ItemReadDto getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                               @PathVariable Long id) {
-        log.info("Get item id {} for user id {}", id, userId);
-        return itemService.getItemDtoById(id, userId);
+    @GetMapping("/{itemId}")
+    public ItemReadDto getItemById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                   @PathVariable Long itemId) {
+        log.info("GetItemById item id {} for user id {}", itemId, userId);
+        return itemService.getItemDtoById(itemId, userId);
     }
 
     /**

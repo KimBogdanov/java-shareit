@@ -9,7 +9,6 @@ import ru.practicum.shareit.booking.model.enums.Status;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -31,7 +30,7 @@ public class BookingController {
                                               @PathVariable Long bookingId,
                                               @RequestParam boolean approved) {
         log.info("Booking id: {} is {} owner id: {}", bookingId, approved, ownerId);
-        return bookingService.approved(ownerId, bookingId, approved);
+        return bookingService.approvedBooking(ownerId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")

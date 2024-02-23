@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.practicum.shareit.booking.dto.BookingWithBookerProjection;
+import ru.practicum.shareit.booking.dto.BookingForItemReadDto;
 import ru.practicum.shareit.item.comment.dto.CommentReadDto;
 import ru.practicum.shareit.item.dto.ItemReadDto;
 import ru.practicum.shareit.item.model.Item;
@@ -16,7 +16,7 @@ public interface ItemBookingMapper {
     @Mapping(target = "description", source = "item.description")
     @Mapping(target = "available", source = "item.available")
     ItemReadDto toItemBookingDto(Item item,
-                                 BookingWithBookerProjection last,
-                                 BookingWithBookerProjection next,
+                                 BookingForItemReadDto lastBooking,
+                                 BookingForItemReadDto nextBooking,
                                  List<CommentReadDto> comments);
 }
