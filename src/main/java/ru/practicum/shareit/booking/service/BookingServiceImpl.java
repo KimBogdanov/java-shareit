@@ -71,7 +71,6 @@ public class BookingServiceImpl implements BookingService {
         return bookingWithItemMapper.mapBookingToBookingWithItemDto(booking);
     }
 
-
     @Override
     public List<BookingWithItemDto> getBookings(Long userId, Status status) {
         User user = getUserById(userId);
@@ -128,39 +127,33 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
-    //+
     private User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
     }
 
-    //+
     private Item getItemById(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Item not found id: " + id));
     }
 
-    //+
     private Booking getBookingById(Long bookingId) {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking not found with id: " + bookingId));
     }
 
-    //+
     private static void checkItemToAvailableAndThrowException(Item item) {
         if (!item.getAvailable()) {
             throw new NotAvailableException("Item not available with id: " + item.getId());
         }
     }
 
-    //+
     private static void checkOwnershipAndThrowException(User booker, Item item) {
         if (item.getOwner().equals(booker)) {
             throw new NotOwnedException("Item id: " + item.getId() + " belong to user id: " + booker.getId());
         }
     }
 
-    //+
     private static void verifyBookingIsBelongToBookerOrOwnerThrowException(Long userId, Booking booking) {
         if (!booking.getBooker().getId().equals(userId)
                 && !booking.getItem().getOwner().getId().equals(userId)) {
@@ -168,14 +161,13 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    //+
+
     public void verifyOwnershipAndThrowException(Item item, User owner) {
         if (!item.getOwner().equals(owner)) {
             throw new NotOwnedException("Item id = " + item.getId() + " does not belong to user userId = " + owner);
         }
     }
 
-    //    +
     private void validateBookingStatus(Booking booking) {
         if (booking.getStatus() != Status.WAITING) {
             throw new InvalidStatusException("Booking status is not waiting, cannot approve or reject");

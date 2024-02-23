@@ -10,5 +10,4 @@ public interface CommentService {
 
     CommentReadDto saveComment(Long userId, Long itemId, CommentCreateDto commentCreateDto);
 
-    List<Comment> getCommentsByItemId(Long itemId);
 }

@@ -45,11 +45,6 @@ public class CommentServiceImpl implements CommentService {
         return commentReadMapper.toCommentReadDto(save);
     }
 
-    @Override
-    public List<Comment> getCommentsByItemId(Long itemId) {
-        return commentRepository.findAllByItem_Id(itemId);
-    }
-
     private void verifyBookingForUser(Long bookerId, Item item) {
         boolean isBooked = bookingRepository.isExistPastBookingByUserIdAndItemId(bookerId, item.getId());
         if (!isBooked) {

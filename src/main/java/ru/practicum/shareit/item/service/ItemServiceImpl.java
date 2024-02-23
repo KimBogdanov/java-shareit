@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingForItemReadDto;
@@ -28,7 +27,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -81,7 +79,7 @@ public class ItemServiceImpl implements ItemService {
 
         Map<Long, BookingForItemReadDto> nextBookings = listBookingToMapBookingsDto(
                 bookingRepository.findAllNextBookingByItemId(itemsId));
-        log.info("commentsDto");
+
         Map<Long, List<CommentReadDto>> commentsDto = commentListToCommentReadDtoMap(
                 commentRepository.findAllByItem_IdIn(itemsId));
         return items.stream()
