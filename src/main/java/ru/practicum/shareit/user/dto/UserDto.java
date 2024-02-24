@@ -6,7 +6,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
-@RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
 public class UserDto {
@@ -15,4 +14,7 @@ public class UserDto {
     @Email
     @NotBlank
     private String email;
+
+    public UserDto() {
+    }
 }
