@@ -26,7 +26,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.booker.id = :bookerId " +
             "ORDER BY b.start DESC")
-    List<Booking> findAllByBookerId(@Param("ownerId") Long bookerId);
+    List<Booking> findAllByBookerId(@Param("bookerId") Long bookerId);
 
     @Query("SELECT b FROM Booking AS b WHERE b.item.owner.id = :ownerId ORDER BY b.start DESC")
     List<Booking> findAllByOwnerId(@Param("ownerId") Long ownerId);
@@ -36,7 +36,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "AND b.start <= CURRENT_TIMESTAMP " +
             "AND b.end >= CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
-    List<Booking> findCurrentBookingsByBookerId(@Param("ownerId") Long bookerId);
+    List<Booking> findCurrentBookingsByBookerId(@Param("bookerId") Long bookerId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.item.owner.id  = :ownerId " +
@@ -49,7 +49,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.booker.id = :bookerId " +
             "AND b.end <= CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
-    List<Booking> findPastBookingsByBookerId(@Param("ownerId") Long bookerId);
+    List<Booking> findPastBookingsByBookerId(@Param("bookerId") Long bookerId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.item.owner.id  = :ownerId " +
@@ -61,7 +61,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.booker.id = :bookerId " +
             "AND b.start >= CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
-    List<Booking> findFutureBookingsByBookerId(@Param("ownerId") Long bookerId);
+    List<Booking> findFutureBookingsByBookerId(@Param("bookerId") Long bookerId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.item.owner.id  = :ownerId " +

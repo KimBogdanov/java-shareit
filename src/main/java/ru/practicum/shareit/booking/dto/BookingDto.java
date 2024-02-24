@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.booking.validator.EndTimeAfterStartTime;
 
@@ -11,17 +12,19 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
-@RequiredArgsConstructor
 @Builder
 @EndTimeAfterStartTime
 public class BookingDto {
-    private final Long id;
+    private Long id;
     @NotNull
     @FutureOrPresent
-    private final LocalDateTime start;
+    private LocalDateTime start;
     @NotNull
     @Future
-    private final LocalDateTime end;
+    private LocalDateTime end;
     @NotNull
-    private final Long itemId;
+    private Long itemId;
+
+    public BookingDto() {
+    }
 }
