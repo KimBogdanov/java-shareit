@@ -19,9 +19,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -63,9 +60,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingWithItemDto getStatus(Long userId, Long bookingId) {
         Booking booking = getBookingById(bookingId);
-        log.info(booking.toString());
         Item item = booking.getItem();
-        log.info(item.toString());
 
         verifyBookingIsBelongToBookerOrOwnerThrowException(userId, booking);
         return bookingWithItemMapper.mapBookingToBookingWithItemDto(booking);
@@ -102,7 +97,6 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingWithItemDto> getBookingItem(Long ownerId, Status status) {
         User owner = getUserById(ownerId);
         List<Booking> bookings;
-        log.info("User.id {}, status {}", ownerId, status.toString());
 
         switch (status) {
             case CURRENT:
@@ -115,13 +109,11 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findFutureBookingsByOwnerId(ownerId);
                 break;
             case ALL:
-                log.info("All");
                 bookings = bookingRepository.findAllByOwnerId(ownerId);
                 break;
             default:
                 bookings = bookingRepository.findAllBookingsByOwnerIdAndStatus(ownerId, status);
         }
-        log.info(bookings.toString());
         return bookings.stream()
                 .map(bookingWithItemMapper::mapBookingToBookingWithItemDto)
                 .collect(Collectors.toList());
