@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.enums.Status;
 
@@ -14,92 +15,92 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.booker.id = :bookerId " +
             "AND b.status = :status " +
             "ORDER BY b.start DESC")
-    List<Booking> findAllBookerByIdAndStatus(Long bookerId, Status status);
+    List<Booking> findAllBookerByIdAndStatus(@Param("bookerId") Long bookerId, @Param("status") Status status);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.item.owner.id  = :ownerId " +
             "AND b.status = :status " +
             "ORDER BY b.start DESC")
-    List<Booking> findAllBookingsByOwnerIdAndStatus(Long ownerId, Status status);
+    List<Booking> findAllBookingsByOwnerIdAndStatus(@Param("ownerId") Long ownerId, @Param("status") Status status);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.booker.id = :bookerId " +
             "ORDER BY b.start DESC")
-    List<Booking> findAllByBookerId(Long bookerId);
+    List<Booking> findAllByBookerId(@Param("ownerId") Long bookerId);
 
     @Query("SELECT b FROM Booking AS b WHERE b.item.owner.id = :ownerId ORDER BY b.start DESC")
-    List<Booking> findAllByOwnerId(Long ownerId);
+    List<Booking> findAllByOwnerId(@Param("ownerId") Long ownerId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.booker.id = :bookerId " +
             "AND b.start <= CURRENT_TIMESTAMP " +
             "AND b.end >= CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
-    List<Booking> findCurrentBookingsByBookerId(Long bookerId);
+    List<Booking> findCurrentBookingsByBookerId(@Param("ownerId") Long bookerId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.item.owner.id  = :ownerId " +
             "AND b.start <= CURRENT_TIMESTAMP " +
             "AND b.end >= CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
-    List<Booking> findCurrentBookingsByOwnerId(Long ownerId);
+    List<Booking> findCurrentBookingsByOwnerId(@Param("ownerId") Long ownerId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.booker.id = :bookerId " +
             "AND b.end <= CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
-    List<Booking> findPastBookingsByBookerId(Long bookerId);
+    List<Booking> findPastBookingsByBookerId(@Param("ownerId") Long bookerId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.item.owner.id  = :ownerId " +
             "AND b.end <= CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
-    List<Booking> findPastBookingsByOwnerId(Long ownerId);
+    List<Booking> findPastBookingsByOwnerId(@Param("ownerId") Long ownerId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.booker.id = :bookerId " +
             "AND b.start >= CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
-    List<Booking> findFutureBookingsByBookerId(Long bookerId);
+    List<Booking> findFutureBookingsByBookerId(@Param("ownerId") Long bookerId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.item.owner.id  = :ownerId " +
             "AND b.start >= CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
-    List<Booking> findFutureBookingsByOwnerId(Long ownerId);
+    List<Booking> findFutureBookingsByOwnerId(@Param("ownerId") Long ownerId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.status = 'APPROVED' " +
             "AND b.item.id = :itemId " +
             "AND b.start < CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
-    Page<Booking> findLastBookingByItemId(Long itemId, Pageable pageable);
+    Page<Booking> findLastBookingByItemId(@Param("itemId") Long itemId, Pageable pageable);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.status = 'APPROVED' " +
             "AND b.item.id = :itemId " +
             "AND b.start >= CURRENT_TIMESTAMP " +
             "ORDER BY b.start")
-    Page<Booking> findNextBookingByItemId(Long itemId, Pageable pageable);
+    Page<Booking> findNextBookingByItemId(@Param("itemId") Long itemId, Pageable pageable);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.status = 'APPROVED' " +
             "AND b.item.id IN :itemId " +
             "AND b.start < CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC")
-    List<Booking> findAllLastBookingByItemId(List<Long> itemId);
+    List<Booking> findAllLastBookingByItemId(@Param("itemId") List<Long> itemId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.status = 'APPROVED' " +
             "AND b.item.id IN :itemId " +
             "AND b.start >= CURRENT_TIMESTAMP " +
             "ORDER BY b.start")
-    List<Booking> findAllNextBookingByItemId(List<Long> itemId);
+    List<Booking> findAllNextBookingByItemId(@Param("itemId") List<Long> itemId);
 
     @Query(value = "SELECT COUNT(b) > 0 FROM Booking AS b " +
             "WHERE b.booker.id = :userId " +
             "AND b.item.id = :itemId " +
             "AND b.status = 'APPROVED' " +
             "AND b.start < CURRENT_TIMESTAMP")
-    boolean isExistPastBookingByUserIdAndItemId(Long userId, Long itemId);
+    boolean isExistPastBookingByUserIdAndItemId(@Param("userId") Long userId, @Param("itemId") Long itemId);
 }
