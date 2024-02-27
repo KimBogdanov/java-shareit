@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
-    public static final PageRequest PAGEABLE = PageRequest.of(0, 1);
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final ItemBookingMapper itemBookingMapper;
