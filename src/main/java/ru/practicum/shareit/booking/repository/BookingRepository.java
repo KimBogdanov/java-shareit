@@ -55,6 +55,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "AND b.start >= CURRENT_TIMESTAMP " +
             "ORDER BY b.start")
     Page<Booking> findNextBookingByItemId(@Param("itemId") Long itemId, Pageable pageable);
+
     Optional<Booking> findFirstByItem_IdAndStatusAndStartAfterOrderByStart(
             Long itemId,
             Status status,
