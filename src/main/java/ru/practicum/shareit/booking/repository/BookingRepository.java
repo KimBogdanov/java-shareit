@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.model.enums.Status;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Long bookerId, Status status);
@@ -43,12 +44,21 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "ORDER BY b.start DESC")
     Page<Booking> findLastBookingByItemId(@Param("itemId") Long itemId, Pageable pageable);
 
+    Optional<Booking> findFirstByItem_IdAndStatusAndStartBeforeOrderByStartDesc(
+            Long itemId,
+            Status status,
+            LocalDateTime currentTime);
+
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.status = 'APPROVED' " +
             "AND b.item.id = :itemId " +
             "AND b.start >= CURRENT_TIMESTAMP " +
             "ORDER BY b.start")
     Page<Booking> findNextBookingByItemId(@Param("itemId") Long itemId, Pageable pageable);
+    Optional<Booking> findFirstByItem_IdAndStatusAndStartAfterOrderByStart(
+            Long itemId,
+            Status status,
+            LocalDateTime currentTime);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.status = 'APPROVED' " +

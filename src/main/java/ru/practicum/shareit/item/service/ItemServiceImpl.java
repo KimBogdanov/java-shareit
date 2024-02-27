@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingForItemReadDto;
 import ru.practicum.shareit.booking.mapper.BookingForItemReadMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.enums.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.NotOwnedException;
@@ -24,6 +25,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,8 +49,10 @@ public class ItemServiceImpl implements ItemService {
         BookingForItemReadDto last = null;
         BookingForItemReadDto next = null;
         if (item.getOwner().getId().equals(userId)) {
-            last = getBooking(bookingRepository.findLastBookingByItemId(itemId, PAGEABLE));
-            next = getBooking(bookingRepository.findNextBookingByItemId(itemId, PAGEABLE));
+            last = getBooking(bookingRepository.findFirstByItem_IdAndStatusAndStartBeforeOrderByStartDesc(
+                    itemId, Status.APPROVED, LocalDateTime.now()));
+            next = getBooking(bookingRepository.findFirstByItem_IdAndStatusAndStartAfterOrderByStart(
+                    itemId, Status.APPROVED, LocalDateTime.now()));
         }
         List<CommentReadDto> commentReadDtoList = commentRepository.findAllByItem_Id(itemId).stream()
                 .map(commentReadMapper::toCommentReadDto)
@@ -151,12 +155,12 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toMap(
                         booking -> booking.getItem().getId(),
                         bookingForItemReadMapper::toDto,
-                        (existing, replacement) -> existing // стратегия разрешения конфликтов
+                        (existing, replacement) -> existing
                 ));
     }
 
-    private BookingForItemReadDto getBooking(Page<Booking> page) {
-        return page.get().findFirst().map(bookingForItemReadMapper::toDto).orElse(null);
+    private BookingForItemReadDto getBooking(Optional<Booking> optional) {
+        return optional.map(bookingForItemReadMapper::toDto).orElse(null);
     }
 
     private void validateUserExists(Long userId) {
