@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.service;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
