@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"booker", "item"})
 @Builder
 @Entity
 @Table(name = "bookings")
@@ -25,7 +26,7 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "booker_id", nullable = false)
     private User booker;
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
     @Enumerated(EnumType.STRING)

@@ -69,7 +69,7 @@ public class ItemServiceImpl implements ItemService {
         validateUserExists(ownerId);
         List<Item> items = itemRepository.findAllByOwnerId(ownerId);
         if (items == null) {
-            return null;
+            return new ArrayList<>();
         }
         List<Long> itemsId = items.stream()
                 .map(Item::getId)

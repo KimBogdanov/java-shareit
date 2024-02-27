@@ -82,10 +82,10 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findFutureBookingsByBookerId(userId);
                 break;
             case ALL:
-                bookings = bookingRepository.findAllByBookerId(userId);
+                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
                 break;
             default:
-                bookings = bookingRepository.findAllBookerByIdAndStatus(userId, status);
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, status);
         }
 
         return bookings.stream()
@@ -109,10 +109,10 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findFutureBookingsByOwnerId(ownerId);
                 break;
             case ALL:
-                bookings = bookingRepository.findAllByOwnerId(ownerId);
+                bookings = bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId);
                 break;
             default:
-                bookings = bookingRepository.findAllBookingsByOwnerIdAndStatus(ownerId, status);
+                bookings = bookingRepository.findAllByItem_Owner_IdAndStatusOrderByStartDesc(ownerId, status);
         }
         return bookings.stream()
                 .map(bookingWithItemMapper::mapBookingToBookingWithItemDto)
@@ -134,19 +134,19 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Booking not found with id: " + bookingId));
     }
 
-    private static void checkItemToAvailableAndThrowException(Item item) {
+    private void checkItemToAvailableAndThrowException(Item item) {
         if (!item.getAvailable()) {
             throw new NotAvailableException("Item not available with id: " + item.getId());
         }
     }
 
-    private static void checkOwnershipAndThrowException(User booker, Item item) {
+    private void checkOwnershipAndThrowException(User booker, Item item) {
         if (item.getOwner().equals(booker)) {
             throw new NotOwnedException("Item id: " + item.getId() + " belong to user id: " + booker.getId());
         }
     }
 
-    private static void verifyBookingIsBelongToBookerOrOwnerThrowException(Long userId, Booking booking) {
+    private void verifyBookingIsBelongToBookerOrOwnerThrowException(Long userId, Booking booking) {
         if (!booking.getBooker().getId().equals(userId)
                 && !booking.getItem().getOwner().getId().equals(userId)) {
             throw new NotBelongToUser("Booking not belong to users id: " + userId);

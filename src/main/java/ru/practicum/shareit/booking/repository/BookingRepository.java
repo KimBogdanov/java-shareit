@@ -11,25 +11,13 @@ import ru.practicum.shareit.booking.model.enums.Status;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    @Query("SELECT b FROM Booking AS b " +
-            "WHERE b.booker.id = :bookerId " +
-            "AND b.status = :status " +
-            "ORDER BY b.start DESC")
-    List<Booking> findAllBookerByIdAndStatus(@Param("bookerId") Long bookerId, @Param("status") Status status);
+    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Long bookerId, Status status);
 
-    @Query("SELECT b FROM Booking AS b " +
-            "WHERE b.item.owner.id  = :ownerId " +
-            "AND b.status = :status " +
-            "ORDER BY b.start DESC")
-    List<Booking> findAllBookingsByOwnerIdAndStatus(@Param("ownerId") Long ownerId, @Param("status") Status status);
+    List<Booking> findAllByItem_Owner_IdAndStatusOrderByStartDesc(Long ownerId, Status status);
 
-    @Query("SELECT b FROM Booking AS b " +
-            "WHERE b.booker.id = :bookerId " +
-            "ORDER BY b.start DESC")
-    List<Booking> findAllByBookerId(@Param("bookerId") Long bookerId);
+    List<Booking> findAllByBookerIdOrderByStartDesc(Long bookerId);
 
-    @Query("SELECT b FROM Booking AS b WHERE b.item.owner.id = :ownerId ORDER BY b.start DESC")
-    List<Booking> findAllByOwnerId(@Param("ownerId") Long ownerId);
+    List<Booking> findAllByItem_Owner_IdOrderByStartDesc(Long ownerId);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.booker.id = :bookerId " +
