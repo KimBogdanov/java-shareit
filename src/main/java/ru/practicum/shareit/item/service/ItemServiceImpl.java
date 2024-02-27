@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item.service;
 
-import org.springframework.data.domain.PageRequest;
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -76,14 +77,14 @@ public class ItemServiceImpl implements ItemService {
         List<Long> itemsId = items.stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
-        Map<Long, BookingForItemReadDto> lastBookings = listBookingToMapBookingsDto(
-                bookingRepository.findAllLastBookingByItemId(itemsId));
 
-        Map<Long, BookingForItemReadDto> nextBookings = listBookingToMapBookingsDto(
-                bookingRepository.findAllNextBookingByItemId(itemsId));
+        List<Booking> last = bookingRepository.findLatestBookingsByOwner(ownerId);
+        List<Booking> next = bookingRepository.findAllNextBookingsByOwner(ownerId);
+        List<Comment> comments = commentRepository.findAllByItem_IdIn(itemsId);
 
-        Map<Long, List<CommentReadDto>> commentsDto = commentListToCommentReadDtoMap(
-                commentRepository.findAllByItem_IdIn(itemsId));
+        Map<Long, BookingForItemReadDto> lastBookings = listBookingToMapBookingsDto(last);
+        Map<Long, BookingForItemReadDto> nextBookings = listBookingToMapBookingsDto(next);
+        Map<Long, List<CommentReadDto>> commentsDto = commentListToCommentReadDtoMap(comments);
         return items.stream()
                 .map(item -> itemBookingMapper.toItemBookingDto(
                         item,

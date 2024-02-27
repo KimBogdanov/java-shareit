@@ -45,19 +45,23 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             Status status,
             LocalDateTime currentTime);
 
-    @Query("SELECT b FROM Booking AS b " +
-            "WHERE b.status = 'APPROVED' " +
-            "AND b.item.id IN :itemId " +
-            "AND b.start < CURRENT_TIMESTAMP " +
-            "ORDER BY b.start DESC")
-    List<Booking> findAllLastBookingByItemId(@Param("itemId") List<Long> itemId);
+    @Query(nativeQuery = true, value = "SELECT DISTINCT ON(b.item_id) b.* " +
+            "FROM bookings AS b " +
+            "JOIN items AS i on i.id = b.item_id " +
+            "WHERE i.owner = :ownerId " +
+            "AND b.start_time <= current_timestamp " +
+            "AND b.status = 'APPROVED' " +
+            "ORDER BY b.item_id, b.start_time DESC;")
+    List<Booking> findLatestBookingsByOwner(@Param("ownerId") Long ownerId);
 
-    @Query("SELECT b FROM Booking AS b " +
-            "WHERE b.status = 'APPROVED' " +
-            "AND b.item.id IN :itemId " +
-            "AND b.start >= CURRENT_TIMESTAMP " +
-            "ORDER BY b.start")
-    List<Booking> findAllNextBookingByItemId(@Param("itemId") List<Long> itemId);
+    @Query(nativeQuery = true, value = "SELECT DISTINCT ON(b.item_id) b.* " +
+            "FROM bookings AS b " +
+            "JOIN items AS i on i.id = b.item_id " +
+            "WHERE i.owner = :ownerId " +
+            "AND b.start_time > current_timestamp " +
+            "AND b.status = 'APPROVED' " +
+            "ORDER BY b.item_id, b.start_time;")
+    List<Booking> findAllNextBookingsByOwner(@Param("ownerId") Long ownerId);
 
     boolean existsByBookerIdAndItemIdAndStatusAndStartBefore(Long userId,
                                                              Long itemId,
