@@ -16,6 +16,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,13 +74,20 @@ public class BookingServiceImpl implements BookingService {
 
         switch (status) {
             case CURRENT:
-                bookings = bookingRepository.findCurrentBookingsByBookerId(userId);
+                bookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(
+                        userId,
+                        LocalDateTime.now(),
+                        LocalDateTime.now());
                 break;
             case PAST:
-                bookings = bookingRepository.findPastBookingsByBookerId(userId);
+                bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(
+                        userId,
+                        LocalDateTime.now());
                 break;
             case FUTURE:
-                bookings = bookingRepository.findFutureBookingsByBookerId(userId);
+                bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(
+                        userId,
+                        LocalDateTime.now());
                 break;
             case ALL:
                 bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
@@ -100,13 +108,20 @@ public class BookingServiceImpl implements BookingService {
 
         switch (status) {
             case CURRENT:
-                bookings = bookingRepository.findCurrentBookingsByOwnerId(ownerId);
+                bookings = bookingRepository.findBookingByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(
+                        ownerId,
+                        LocalDateTime.now(),
+                        LocalDateTime.now());
                 break;
             case PAST:
-                bookings = bookingRepository.findPastBookingsByOwnerId(ownerId);
+                bookings = bookingRepository.findAllByItem_Owner_IdAndEndBeforeOrderByStartDesc(
+                        ownerId,
+                        LocalDateTime.now());
                 break;
             case FUTURE:
-                bookings = bookingRepository.findFutureBookingsByOwnerId(ownerId);
+                bookings = bookingRepository.findAllByItem_Owner_IdAndStartAfterOrderByStartDesc(
+                        ownerId,
+                        LocalDateTime.now());
                 break;
             case ALL:
                 bookings = bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId);

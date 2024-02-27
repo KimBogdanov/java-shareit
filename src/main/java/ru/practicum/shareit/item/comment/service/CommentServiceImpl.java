@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.comment.service;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.model.enums.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.CommentNotAllowedException;
 import ru.practicum.shareit.exception.NotAvailableException;
@@ -44,7 +45,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private void verifyBookingForUser(Long bookerId, Item item) {
-        boolean isBooked = bookingRepository.isExistPastBookingByUserIdAndItemId(bookerId, item.getId());
+        boolean isBooked = bookingRepository.existsByBookerIdAndItemIdAndStatusAndStartBefore(
+                bookerId, item.getId(), Status.APPROVED, LocalDateTime.now());
         if (!isBooked) {
             throw new NotAvailableException("Not had bookings user id: " + bookerId + " for item id " + item.getId());
         }

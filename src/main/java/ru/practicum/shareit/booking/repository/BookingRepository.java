@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.enums.Status;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -19,43 +20,21 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByItem_Owner_IdOrderByStartDesc(Long ownerId);
 
-    @Query("SELECT b FROM Booking AS b " +
-            "WHERE b.booker.id = :bookerId " +
-            "AND b.start <= CURRENT_TIMESTAMP " +
-            "AND b.end >= CURRENT_TIMESTAMP " +
-            "ORDER BY b.start DESC")
-    List<Booking> findCurrentBookingsByBookerId(@Param("bookerId") Long bookerId);
+    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long bookerId,
+                                                                             LocalDateTime currentTime,
+                                                                             LocalDateTime currentTime2);
 
-    @Query("SELECT b FROM Booking AS b " +
-            "WHERE b.item.owner.id  = :ownerId " +
-            "AND b.start <= CURRENT_TIMESTAMP " +
-            "AND b.end >= CURRENT_TIMESTAMP " +
-            "ORDER BY b.start DESC")
-    List<Booking> findCurrentBookingsByOwnerId(@Param("ownerId") Long ownerId);
+    List<Booking> findBookingByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(Long ownerId,
+                                                                                      LocalDateTime currentTime,
+                                                                                      LocalDateTime currentTime2);
 
-    @Query("SELECT b FROM Booking AS b " +
-            "WHERE b.booker.id = :bookerId " +
-            "AND b.end <= CURRENT_TIMESTAMP " +
-            "ORDER BY b.start DESC")
-    List<Booking> findPastBookingsByBookerId(@Param("bookerId") Long bookerId);
+    List<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime currentTime);
 
-    @Query("SELECT b FROM Booking AS b " +
-            "WHERE b.item.owner.id  = :ownerId " +
-            "AND b.end <= CURRENT_TIMESTAMP " +
-            "ORDER BY b.start DESC")
-    List<Booking> findPastBookingsByOwnerId(@Param("ownerId") Long ownerId);
+    List<Booking> findAllByItem_Owner_IdAndEndBeforeOrderByStartDesc(Long ownerId, LocalDateTime currentTime);
 
-    @Query("SELECT b FROM Booking AS b " +
-            "WHERE b.booker.id = :bookerId " +
-            "AND b.start >= CURRENT_TIMESTAMP " +
-            "ORDER BY b.start DESC")
-    List<Booking> findFutureBookingsByBookerId(@Param("bookerId") Long bookerId);
+    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Long bookerId, LocalDateTime currenTime);
 
-    @Query("SELECT b FROM Booking AS b " +
-            "WHERE b.item.owner.id  = :ownerId " +
-            "AND b.start >= CURRENT_TIMESTAMP " +
-            "ORDER BY b.start DESC")
-    List<Booking> findFutureBookingsByOwnerId(@Param("ownerId") Long ownerId);
+    List<Booking> findAllByItem_Owner_IdAndStartAfterOrderByStartDesc(Long ownerId, LocalDateTime currentTime);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.status = 'APPROVED' " +
@@ -85,10 +64,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "ORDER BY b.start")
     List<Booking> findAllNextBookingByItemId(@Param("itemId") List<Long> itemId);
 
-    @Query(value = "SELECT COUNT(b) > 0 FROM Booking AS b " +
-            "WHERE b.booker.id = :userId " +
-            "AND b.item.id = :itemId " +
-            "AND b.status = 'APPROVED' " +
-            "AND b.start < CURRENT_TIMESTAMP")
-    boolean isExistPastBookingByUserIdAndItemId(@Param("userId") Long userId, @Param("itemId") Long itemId);
+    boolean existsByBookerIdAndItemIdAndStatusAndStartBefore(Long userId,
+                                                             Long itemId,
+                                                             Status status,
+                                                             LocalDateTime currentTime);
 }

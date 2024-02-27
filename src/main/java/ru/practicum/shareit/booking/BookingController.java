@@ -43,7 +43,7 @@ public class BookingController {
     @GetMapping()
     public List<BookingReadDto> getBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
                                             @RequestParam(required = false, defaultValue = "ALL") String state) {
-        log.info("Get bookings user id: {}, state: {}", userId, state);
+        log.info("GetBookings user id: {}, state: {}", userId, state);
         Status status = getStatus(state);
         return bookingService.getBookings(userId, status);
     }
@@ -51,7 +51,7 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingReadDto> getBookingItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                                                @RequestParam(required = false, defaultValue = "ALL") String state) {
-        log.info("Get bookings for owner id: {}, state: {}", ownerId, state);
+        log.info("GetBookingItem for owner id: {}, state: {}", ownerId, state);
         Status status = getStatus(state);
         return bookingService.getBookingItem(ownerId, status);
     }
