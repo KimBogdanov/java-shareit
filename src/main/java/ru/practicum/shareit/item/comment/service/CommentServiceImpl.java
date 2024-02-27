@@ -46,7 +46,7 @@ public class CommentServiceImpl implements CommentService {
     private void verifyBookingForUser(Long bookerId, Item item) {
         boolean isBooked = bookingRepository.isExistPastBookingByUserIdAndItemId(bookerId, item.getId());
         if (!isBooked) {
-            throw new NotAvailableException("Not had bookings user id: " + bookerId + " for item id " + item);
+            throw new NotAvailableException("Not had bookings user id: " + bookerId + " for item id " + item.getId());
         }
     }
 
