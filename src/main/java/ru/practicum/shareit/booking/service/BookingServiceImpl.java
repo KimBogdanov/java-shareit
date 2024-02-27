@@ -3,8 +3,8 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingWithItemDto;
+import ru.practicum.shareit.booking.dto.BookingCreateDto;
+import ru.practicum.shareit.booking.dto.BookingReadDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.mapper.BookingWithItemMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -31,21 +31,21 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingWithItemDto saveBooking(Long bookerId, BookingDto bookingDto) {
+    public BookingReadDto saveBooking(Long bookerId, BookingCreateDto bookingCreateDto) {
         User booker = getUserById(bookerId);
-        Item item = getItemById(bookingDto.getItemId());
+        Item item = getItemById(bookingCreateDto.getItemId());
 
         checkOwnershipAndThrowException(booker, item);
         checkItemToAvailableAndThrowException(item);
 
-        Booking booking = bookingMapper.toBooking(bookingDto, booker, item, Status.WAITING);
+        Booking booking = bookingMapper.toBooking(bookingCreateDto, booker, item, Status.WAITING);
         return bookingWithItemMapper.mapBookingToBookingWithItemDto(bookingRepository.save(booking));
     }
 
 
     @Override
     @Transactional
-    public BookingWithItemDto approvedBooking(Long ownerId, Long bookingId, boolean approved) {
+    public BookingReadDto approvedBooking(Long ownerId, Long bookingId, boolean approved) {
         Booking booking = getBookingById(bookingId);
         checkItemToAvailableAndThrowException(booking.getItem());
         User owner = getUserById(ownerId);
@@ -58,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingWithItemDto getStatus(Long userId, Long bookingId) {
+    public BookingReadDto getStatus(Long userId, Long bookingId) {
         Booking booking = getBookingById(bookingId);
         Item item = booking.getItem();
 
@@ -67,7 +67,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingWithItemDto> getBookings(Long userId, Status status) {
+    public List<BookingReadDto> getBookings(Long userId, Status status) {
         User user = getUserById(userId);
         List<Booking> bookings;
 
@@ -94,7 +94,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingWithItemDto> getBookingItem(Long ownerId, Status status) {
+    public List<BookingReadDto> getBookingItem(Long ownerId, Status status) {
         User owner = getUserById(ownerId);
         List<Booking> bookings;
 

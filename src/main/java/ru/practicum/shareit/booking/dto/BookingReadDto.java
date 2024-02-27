@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @RequiredArgsConstructor
 @Builder
-public class BookingWithItemDto {
+public class BookingReadDto {
     private final Long id;
     private final LocalDateTime start;
     private final LocalDateTime end;

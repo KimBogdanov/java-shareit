@@ -12,11 +12,4 @@ public class BookingForItemReadDto {
     private final Long bookerId;
     private final LocalDateTime start;
     private final LocalDateTime end;
-
-    public BookingForItemReadDto(Long id, Long bookerId, LocalDateTime start, LocalDateTime end) {
-        this.id = id;
-        this.bookerId = bookerId;
-        this.start = start;
-        this.end = end;
-    }
 }
