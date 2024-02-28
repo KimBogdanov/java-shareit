@@ -6,14 +6,17 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ItemDto {
-    private final Integer id;
+    private Long id;
     @NotBlank
-    private final String name;
+    private String name;
     @NotBlank
-    private final String description;
+    private String description;
     @NotNull
-    private final Boolean available;
+    private Boolean available;
+
+    public ItemDto() {
+    }
 }
