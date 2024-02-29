@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.service;
 
-import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +27,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -59,7 +57,6 @@ public class ItemServiceImpl implements ItemService {
 
         return itemBookingMapper.toItemBookingDto(item, last, next, commentReadDtoList);
     }
-
 
     @Override
     public Item getItemById(Long id) {
