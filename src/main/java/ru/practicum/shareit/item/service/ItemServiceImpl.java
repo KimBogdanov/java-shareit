@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingForItemReadDto;
@@ -20,13 +21,15 @@ import ru.practicum.shareit.item.mapper.ItemBookingMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -36,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemBookingMapper itemBookingMapper;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final CommentReadMapper commentReadMapper;
     private final BookingForItemReadMapper bookingForItemReadMapper;
 
@@ -95,10 +99,21 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemDto saveItem(ItemDto itemDto, Long userId) {
-        User user = getUserById(userId);
-        Item item = ItemMapper.toItem(itemDto);
-        item.setOwner(user);
-        return ItemMapper.toItemDto(itemRepository.save(item));
+        User owner = getUserById(userId);
+        ItemRequest itemRequest  = getItemRequestIfExistOrNull(itemDto);
+
+        Item item = itemRepository.save(ItemMapper.toItem(itemDto, owner, itemRequest));
+
+        return ItemMapper.toItemDto(item);
+    }
+
+    private ItemRequest getItemRequestIfExistOrNull(ItemDto itemDto) {
+        return itemDto.getRequest() != null ? getItemRequest(itemDto) : null;
+    }
+
+    private ItemRequest getItemRequest(ItemDto itemDto) {
+        return itemRequestRepository.findById(itemDto.getRequest())
+                .orElseThrow(() -> new NotFoundException("Not found request id: " + itemDto.getRequest()));
     }
 
     @Transactional
