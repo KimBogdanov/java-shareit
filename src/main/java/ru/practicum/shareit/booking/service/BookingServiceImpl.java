@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
@@ -68,32 +70,43 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingReadDto> getBookings(Long userId, Status status) {
+    public List<BookingReadDto> getBookings(Long userId, Status status, Integer from, Integer size) {
         User user = getUserById(userId);
-        List<Booking> bookings;
+        Page<Booking> bookings;
 
         switch (status) {
             case CURRENT:
                 bookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(
                         userId,
                         LocalDateTime.now(),
-                        LocalDateTime.now());
+                        LocalDateTime.now(),
+                        PageRequest.of(from, size)
+                );
                 break;
             case PAST:
                 bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(
                         userId,
-                        LocalDateTime.now());
+                        LocalDateTime.now(),
+                        PageRequest.of(from, size)
+                );
                 break;
             case FUTURE:
                 bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(
                         userId,
-                        LocalDateTime.now());
+                        LocalDateTime.now(),
+                        PageRequest.of(from, size)
+                );
                 break;
             case ALL:
-                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
+                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(
+                        userId,
+                        PageRequest.of(from, size));
                 break;
             default:
-                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, status);
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
+                        userId,
+                        status,
+                        PageRequest.of(from, size));
         }
 
         return bookings.stream()
@@ -102,32 +115,44 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingReadDto> getBookingItem(Long ownerId, Status status) {
+    public List<BookingReadDto> getBookingItem(Long ownerId, Status status, Integer from, Integer size) {
         User owner = getUserById(ownerId);
-        List<Booking> bookings;
+        Page<Booking> bookings;
 
         switch (status) {
             case CURRENT:
                 bookings = bookingRepository.findBookingByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(
                         ownerId,
                         LocalDateTime.now(),
-                        LocalDateTime.now());
+                        LocalDateTime.now(),
+                        PageRequest.of(from, size)
+                );
                 break;
             case PAST:
                 bookings = bookingRepository.findAllByItem_Owner_IdAndEndBeforeOrderByStartDesc(
                         ownerId,
-                        LocalDateTime.now());
+                        LocalDateTime.now(),
+                        PageRequest.of(from, size)
+                );
                 break;
             case FUTURE:
                 bookings = bookingRepository.findAllByItem_Owner_IdAndStartAfterOrderByStartDesc(
                         ownerId,
-                        LocalDateTime.now());
+                        LocalDateTime.now(),
+                        PageRequest.of(from, size)
+                );
                 break;
             case ALL:
-                bookings = bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId);
+                bookings = bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(
+                        ownerId,
+                        PageRequest.of(from, size)
+                );
                 break;
             default:
-                bookings = bookingRepository.findAllByItem_Owner_IdAndStatusOrderByStartDesc(ownerId, status);
+                bookings = bookingRepository.findAllByItem_Owner_IdAndStatusOrderByStartDesc(
+                        ownerId,
+                        status,
+                        PageRequest.of(from, size));
         }
         return bookings.stream()
                 .map(bookingWithItemMapper::mapBookingToBookingWithItemDto)

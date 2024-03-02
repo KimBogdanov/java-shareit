@@ -36,9 +36,7 @@ public class ItemRequestController {
                                                       @RequestParam(defaultValue = "0") Integer from,
                                                       @RequestParam(defaultValue = "10") Integer size) {
         log.info("getAllRequestItem user id {}, from: {}, size: {}", userId, from, size);
-        if (from < 0 || size < 1) {
-            throw new IllegalArgumentException("Request param incorrect");
-        }
+        checkRequestParamAndThrowException(from, size);
 
         return itemRequestService.getAllRequestItem(userId, from, size);
     }
@@ -48,6 +46,12 @@ public class ItemRequestController {
                                                     @PathVariable Long requestId) {
         log.info("getItemRequestInfoDto user id: {}, request id: {}", userId, requestId);
         return itemRequestService.getItemRequestsId(userId, requestId);
+    }
+
+    private static void checkRequestParamAndThrowException(Integer from, Integer size) {
+        if (from < 0 || size < 1) {
+            throw new IllegalArgumentException("Request param incorrect");
+        }
     }
 }
 

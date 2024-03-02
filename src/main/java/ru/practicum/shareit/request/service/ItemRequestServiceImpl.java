@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -21,12 +22,14 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
     private final UserRepository userRepository;
@@ -37,6 +40,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
 
     @Override
+    @Transactional
     public ItemRequestReadDto save(ItemRequestCreatDto itemRequestReadDto, Long requesterId) {
         User requester = getUserById(requesterId);
         ItemRequest itemRequest = itemRequestRepository.save(
@@ -51,7 +55,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<ItemRequest> requests = itemRequestRepository.findAllByRequesterId(requesterId);
         Map<Long, List<ItemDto>> itemDtoMap = getItemDtoMap(requests);
         return requests.stream()
-                .map(request -> itemRequestInfoMapper.toDto(request, itemDtoMap.get(request.getId())))
+                .map(request -> itemRequestInfoMapper.toDto(
+                        request,
+                        itemDtoMap.get(request.getId()) == null ? // надо покумекать
+                                new ArrayList<ItemDto>() : itemDtoMap.get(request.getId())))
                 .collect(Collectors.toList());
     }
 

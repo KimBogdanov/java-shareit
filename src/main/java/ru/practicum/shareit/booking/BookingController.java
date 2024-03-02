@@ -42,22 +42,34 @@ public class BookingController {
 
     @GetMapping()
     public List<BookingReadDto> getBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                            @RequestParam(required = false, defaultValue = "ALL") String state) {
+                                            @RequestParam(required = false, defaultValue = "ALL") String state,
+                                            @RequestParam(defaultValue = "0") Integer from,
+                                            @RequestParam(defaultValue = "10") Integer size) {
         log.info("GetBookings user id: {}, state: {}", userId, state);
         Status status = getStatus(state);
-        return bookingService.getBookings(userId, status);
+        checkRequestParamAndThrowException(from, size);
+        return bookingService.getBookings(userId, status, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingReadDto> getBookingItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                               @RequestParam(required = false, defaultValue = "ALL") String state) {
+                                               @RequestParam(required = false, defaultValue = "ALL") String state,
+                                               @RequestParam(defaultValue = "0") Integer from,
+                                               @RequestParam(defaultValue = "10") Integer size) {
         log.info("GetBookingItem for owner id: {}, state: {}", ownerId, state);
         Status status = getStatus(state);
-        return bookingService.getBookingItem(ownerId, status);
+        checkRequestParamAndThrowException(from, size);
+        return bookingService.getBookingItem(ownerId, status, from, size);
     }
 
     private static Status getStatus(String state) {
         return Status.check(state)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + state));
+    }
+
+    private static void checkRequestParamAndThrowException(Integer from, Integer size) {
+        if (from < 0 || size < 1) {
+            throw new IllegalArgumentException("Request param incorrect");
+        }
     }
 }

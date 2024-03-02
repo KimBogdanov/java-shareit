@@ -28,9 +28,12 @@ public class ItemController {
      * @return Список объектов {@link ItemReadDto}, описывающих вещи пользователя.
      */
     @GetMapping()
-    public List<ItemReadDto> getAllItemsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemReadDto> getAllItemsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                 @RequestParam(defaultValue = "0") Integer from,
+                                                 @RequestParam(defaultValue = "10") Integer size) {
         log.info("Get all the user's items. User id: {}", userId);
-        return itemService.findAllItemsByUserId(userId);
+        checkRequestParamAndThrowException(from, size);
+        return itemService.findAllItemsByUserId(userId, from, size);
     }
 
     /**
@@ -55,9 +58,12 @@ public class ItemController {
      */
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                     @RequestParam String text) {
+                                     @RequestParam String text,
+                                     @RequestParam(defaultValue = "0") Integer from,
+                                     @RequestParam(defaultValue = "10") Integer size) {
         log.info("User: {} search item by string: {}", userId, text);
-        return itemService.searchByString(text, userId);
+        checkRequestParamAndThrowException(from, size);
+        return itemService.searchByString(text, userId, from, size);
     }
 
     /**
@@ -96,5 +102,10 @@ public class ItemController {
                                       @Valid @RequestBody CommentCreateDto commentCreateDto) {
         log.info("Save comment item id");
         return commentService.saveComment(userId, itemId, commentCreateDto);
+    }
+    private static void checkRequestParamAndThrowException(Integer from, Integer size) {
+        if (from < 0 || size < 1) {
+            throw new IllegalArgumentException("Request param incorrect");
+        }
     }
 }

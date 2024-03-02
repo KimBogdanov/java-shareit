@@ -14,11 +14,11 @@ public interface ItemService {
 
     ItemReadDto getItemDtoById(Long id, Long userId);
 
-    List<ItemReadDto> findAllItemsByUserId(Long userId);
+    List<ItemReadDto> findAllItemsByUserId(Long userId, Integer from, Integer size);
 
     ItemDto saveItem(ItemDto itemDto, Long userId);
 
     ItemDto patchItem(ItemDto itemDto, Long itemId, Long userId);
 
-    List<ItemDto> searchByString(String text, Long userId);
+    List<ItemDto> searchByString(String text, Long userId, Integer from, Integer size);
 }

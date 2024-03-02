@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingForItemReadDto;
@@ -70,9 +72,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemReadDto> findAllItemsByUserId(Long ownerId) {
+    public List<ItemReadDto> findAllItemsByUserId(Long ownerId, Integer from, Integer size) {
         validateUserExists(ownerId);
-        List<Item> items = itemRepository.findAllByOwnerId(ownerId);
+        Page<Item> items = itemRepository.findAllByOwnerId(ownerId, PageRequest.of(from, size));
         if (items == null) {
             return new ArrayList<>();
         }
@@ -141,12 +143,15 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> searchByString(String keyword, Long userId) {
+    public List<ItemDto> searchByString(String keyword, Long userId, Integer from, Integer size) {
         validateUserExists(userId);
         if (keyword.isEmpty()) {
             return Collections.emptyList();
         }
-        return itemRepository.findByDescriptionOrNameAndAvailable(keyword).stream()
+        return itemRepository.findByDescriptionOrNameAndAvailable(
+                        keyword,
+                        PageRequest.of(from, size)
+                ).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
