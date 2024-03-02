@@ -16,4 +16,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByDescriptionOrNameAndAvailable(@Param("keyword") String keyword);
 
     List<Item> findAllByOwnerId(Long ownerId);
+
+    @Query("SELECT i FROM Item AS i WHERE i.request.id IN :requestIds")
+    List<Item> findAllByRequestIds(@Param("requestIds") List<Long> requestIds);
+
+    List<Item> findAllByRequestId(Long requestIds);
 }

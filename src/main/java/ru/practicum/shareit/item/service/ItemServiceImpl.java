@@ -29,6 +29,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -100,20 +101,23 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto saveItem(ItemDto itemDto, Long userId) {
         User owner = getUserById(userId);
-        ItemRequest itemRequest  = getItemRequestIfExistOrNull(itemDto);
-
-        Item item = itemRepository.save(ItemMapper.toItem(itemDto, owner, itemRequest));
+        ItemRequest itemRequest = getItemRequestIfExistOrNull(itemDto);
+        log.info("Item request {}", itemRequest);
+        Item entity = ItemMapper.toItem(itemDto, owner, itemRequest);
+        log.info("After mapper {}", entity);
+        Item item = itemRepository.save(entity);
 
         return ItemMapper.toItemDto(item);
     }
 
     private ItemRequest getItemRequestIfExistOrNull(ItemDto itemDto) {
-        return itemDto.getRequest() != null ? getItemRequest(itemDto) : null;
+        return itemDto.getRequestId() != null ? getItemRequest(itemDto) : null;
     }
 
     private ItemRequest getItemRequest(ItemDto itemDto) {
-        return itemRequestRepository.findById(itemDto.getRequest())
-                .orElseThrow(() -> new NotFoundException("Not found request id: " + itemDto.getRequest()));
+        log.info("getItemRequest");
+        return itemRequestRepository.findById(itemDto.getRequestId())
+                .orElseThrow(() -> new NotFoundException("Not found request id: " + itemDto.getRequestId()));
     }
 
     @Transactional
