@@ -5,12 +5,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.AlreadyExistsException;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.dto.UserCreateUpdateDto;
+import ru.practicum.shareit.user.dto.UserReadDto;
+import ru.practicum.shareit.user.mapper.UserCreateUpdateMapper;
+import ru.practicum.shareit.user.mapper.UserReadMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,10 +21,12 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserReadMapper userReadMapper;
+    private final UserCreateUpdateMapper userCreateUpdateMapper;
 
     @Override
-    public UserDto getUserDtoById(Long id) {
-        return UserMapper.toUserDto(getUserById(id));
+    public UserReadDto getUserDtoById(Long id) {
+        return userReadMapper.toDto(getUserById(id));
     }
 
     @Override
@@ -31,46 +36,46 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> findAllUsers() {
+    public List<UserReadDto> findAllUsers() {
         return userRepository.findAll().stream()
-                .map(UserMapper::toUserDto)
+                .map(userReadMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     @Override
-    public UserDto saveUser(UserDto userDto) {
-        return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
+    public UserReadDto saveUser(UserCreateUpdateDto createDto) {
+        return Optional.of(createDto)
+                .map(userCreateUpdateMapper::toModel)
+                .map(userRepository::save)
+                .map(userReadMapper::toDto)
+                .orElseThrow(RuntimeException::new);
     }
 
     @Transactional
     @Override
     public void deleteUserById(Long id) {
-        if (!userExistsById(id)) {
-            throw new NotFoundException("User not found with id: " + id);
-        }
-        userRepository.deleteById(id);
+        userRepository.findById(id).ifPresent(userRepository::delete);
     }
 
     @Transactional
     @Override
-    public UserDto updateUser(UserDto userDto, Long id) {
-        User newUser = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + userDto.getId()));
-        if (userDto.getName() != null) {
-            newUser.setName(userDto.getName());
+    public UserReadDto updateUser(UserCreateUpdateDto userCreateUpdateDto, Long userId) {
+        User oldUser = getUserById(userId);
+        if (userCreateUpdateDto.getName() != null) {
+            oldUser.setName(userCreateUpdateDto.getName());
         }
-        if (userDto.getEmail() != null && !newUser.getEmail().equals(userDto.getEmail())) {
-            if (emailExist(userDto.getEmail())) {
-                throw new AlreadyExistsException("This email " + userDto.getEmail() + " already use other user");
+        if (userCreateUpdateDto.getEmail() != null && !oldUser.getEmail().equals(userCreateUpdateDto.getEmail())) {
+            if (emailExist(userCreateUpdateDto.getEmail())) {
+                throw new AlreadyExistsException("This email: " + userCreateUpdateDto.getEmail() + " already use other user");
             }
-            newUser.setEmail(userDto.getEmail());
+            oldUser.setEmail(userCreateUpdateDto.getEmail());
         }
-        return UserMapper.toUserDto(userRepository.save(newUser));
+        return userReadMapper.toDto(userRepository.save(oldUser));
     }
 
     private boolean emailExist(String email) {
-        return userRepository.emailExist(email);
+        return userRepository.existsByEmail(email);
     }
 
     @Override

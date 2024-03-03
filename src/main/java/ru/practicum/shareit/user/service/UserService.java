@@ -1,7 +1,8 @@
 package ru.practicum.shareit.user.service;
 
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserCreateUpdateDto;
+import ru.practicum.shareit.user.dto.UserReadDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -10,15 +11,15 @@ import java.util.List;
 public interface UserService {
     User getUserById(Long id);
 
-    UserDto getUserDtoById(Long id);
+    UserReadDto getUserDtoById(Long id);
 
-    List<UserDto> findAllUsers();
+    List<UserReadDto> findAllUsers();
 
-    UserDto saveUser(UserDto userDto);
+    UserReadDto saveUser(UserCreateUpdateDto userCreateUpdateDto);
 
     void deleteUserById(Long id);
 
-    UserDto updateUser(UserDto userDto, Long id);
+    UserReadDto updateUser(UserCreateUpdateDto userCreateUpdateDto, Long id);
 
     boolean userExistsById(Long id);
 }
