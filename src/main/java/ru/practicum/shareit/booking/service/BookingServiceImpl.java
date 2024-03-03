@@ -1,8 +1,10 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
@@ -15,6 +17,7 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.pageRequest.PageRequestChangePageToFrom;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -22,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -72,7 +76,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingReadDto> getBookings(Long userId, Status status, Integer from, Integer size) {
         User user = getUserById(userId);
-        Page<Booking> bookings;
+        Page<Booking> bookings = null;
 
         switch (status) {
             case CURRENT:
@@ -98,9 +102,11 @@ public class BookingServiceImpl implements BookingService {
                 );
                 break;
             case ALL:
-                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(
+                log.info("Get all");
+                bookings = bookingRepository.findAllByBookerId(
                         userId,
-                        PageRequest.of(from, size));
+                        new PageRequestChangePageToFrom(from, size, Sort.by(Sort.Order.desc("start"))));
+                log.info("Result {}", bookings.getContent());
                 break;
             default:
                 bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(

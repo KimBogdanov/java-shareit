@@ -3,6 +3,7 @@ package ru.practicum.shareit.request.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -10,6 +11,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.pageRequest.PageRequestChangePageToFrom;
 import ru.practicum.shareit.request.dto.ItemRequestCreatDto;
 import ru.practicum.shareit.request.dto.ItemRequestInfoDto;
 import ru.practicum.shareit.request.dto.ItemRequestReadDto;
@@ -65,8 +67,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestInfoDto> getAllRequestItem(Long userId, Integer from, Integer size) {
         User user = getUserById(userId);
-        Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(
-                userId, PageRequest.of(from, size)
+        Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNot(
+                userId,
+                new PageRequestChangePageToFrom(from, size, Sort.by(Sort.Order.desc("created")))
         );
         Map<Long, List<ItemDto>> itemDtoMap = getItemDtoMap(requests.getContent());
         return requests.stream()
