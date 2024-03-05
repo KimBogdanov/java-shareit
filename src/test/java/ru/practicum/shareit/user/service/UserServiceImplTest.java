@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +29,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 @Transactional
 @SpringBootTest(
         properties = "db.name = test",
@@ -42,6 +42,7 @@ class UserServiceImplTest {
     private final UserRepository userRepository;
 
     @Test
+    @DisplayName("Получаем существуюещего User по id")
     void getUserById_ExistingUser_ShouldReturnUser() {
         User user = createUser("some@mail.ru");
 
@@ -55,6 +56,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Выброс исключения при получении user по невалидному id")
     void getUserById_InvalidId_ShouldThrowIllegalArgumentException() {
         Long invalidUserId = -1L;
 
@@ -64,6 +66,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Выброс исключения при попытке получения несуществующего user")
     void getUserById_NonExistingUser_ShouldThrowNotFoundException() {
         Long nonExistingUserId = 999L;
 
@@ -73,6 +76,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Получаем всех user")
     void findAllUsers() {
         List<UserCreateUpdateDto> sourceUsers = new ArrayList<>();
         sourceUsers.add(makeUserCreateUpdateDto("ivan@email", "Ivan"));
@@ -98,6 +102,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Сохраняем user")
     void saveUser() {
         UserCreateUpdateDto userDto = makeUserCreateUpdateDto("some@email.com", "Пётр");
 
@@ -113,6 +118,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Выброс исключения при сохранении user с повторяющемся email")
     void saveUser_ShouldThrowExceptionOnDuplicateEmail() {
         UserCreateUpdateDto userDto = makeUserCreateUpdateDto("some@email.com", "Пётр");
         userService.saveUser(userDto);
@@ -125,6 +131,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Удаляем существующего user")
     void deleteUserById_ExistingUser_ShouldDeleteUser() {
         User user = createUser("some@mail.ru");
         userRepository.save(user);
@@ -135,6 +142,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Не выбрасывет исклюыение при удалении несуществующего user")
     void deleteUserById_NonExistingUser_ShouldNotThrowException() {
         Long nonExistingUserId = 999L;
 
@@ -142,6 +150,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Обновляем name user")
     void updateUser_ShouldUpdateUserName() {
         User user = userRepository.save(createUser("some@mail.ru"));
         UserCreateUpdateDto updateDto = new UserCreateUpdateDto();
@@ -153,6 +162,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Выброс исключения при обновлении невалидного user id")
     void updateUser_ShouldThrowIllegalArgumentException_ForInvalidUserId() {
         UserCreateUpdateDto updateDto = new UserCreateUpdateDto();
         updateDto.setName("Updated Name");
@@ -163,8 +173,8 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Выброс исключения при обновлении email на занятый другим user")
     void updateUser_ShouldThrowAlreadyExistsExceptionForDuplicateEmail() {
-        // Создайте двух пользователей с разными ID
         User user = userRepository.save(createUser("some@mail.ru"));
         User user2 = userRepository.save(createUser("other@mail.ru"));
 
