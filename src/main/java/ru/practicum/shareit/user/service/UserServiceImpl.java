@@ -31,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Long id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Invalid user id: " + id);
+        }
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
     }
