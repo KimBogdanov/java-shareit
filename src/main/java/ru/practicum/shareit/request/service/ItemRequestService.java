@@ -6,9 +6,10 @@ import ru.practicum.shareit.request.dto.ItemRequestInfoDto;
 import ru.practicum.shareit.request.dto.ItemRequestReadDto;
 
 import java.util.List;
+
 @Transactional(readOnly = true)
 public interface ItemRequestService {
-    ItemRequestReadDto save(ItemRequestCreatDto itemRequestReadDto , Long requester);
+    ItemRequestReadDto save(ItemRequestCreatDto itemRequestReadDto, Long requester);
 
     List<ItemRequestInfoDto> getItemRequestsByUserId(Long requesterId);
 

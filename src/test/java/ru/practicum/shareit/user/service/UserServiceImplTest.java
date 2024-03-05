@@ -136,10 +136,8 @@ class UserServiceImplTest {
 
     @Test
     void deleteUserById_NonExistingUser_ShouldNotThrowException() {
-        // Попытайтесь удалить пользователя с несуществующим id
         Long nonExistingUserId = 999L;
 
-        // Убедитесь, что вызов метода не приводит к исключению
         assertThatCode(() -> userService.deleteUserById(nonExistingUserId)).doesNotThrowAnyException();
     }
 
@@ -153,6 +151,7 @@ class UserServiceImplTest {
 
         assertThat(updatedUser.getName()).isEqualTo("Updated Name");
     }
+
     @Test
     void updateUser_ShouldThrowIllegalArgumentException_ForInvalidUserId() {
         UserCreateUpdateDto updateDto = new UserCreateUpdateDto();
@@ -184,6 +183,7 @@ class UserServiceImplTest {
 
         return dto;
     }
+
     private static User createUser(String email) {
         return User.builder()
                 .name("Ivan")

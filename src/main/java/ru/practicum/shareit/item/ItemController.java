@@ -103,6 +103,7 @@ public class ItemController {
         log.info("Save comment item id");
         return commentService.saveComment(userId, itemId, commentCreateDto);
     }
+
     private static void checkRequestParamAndThrowException(Integer from, Integer size) {
         if (from < 0 || size < 1) {
             throw new IllegalArgumentException("Request param incorrect");
