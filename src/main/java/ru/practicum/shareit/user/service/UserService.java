@@ -9,7 +9,7 @@ import java.util.List;
 
 @Transactional(readOnly = true)
 public interface UserService {
-    User getUserById(Long id);
+    User getUserOrThrowException(Long id);
 
     UserReadDto getUserDtoById(Long id);
 
@@ -20,6 +20,4 @@ public interface UserService {
     void deleteUserById(Long id);
 
     UserReadDto updateUser(UserCreateUpdateDto userCreateUpdateDto, Long id);
-
-    boolean userExistsById(Long id);
 }

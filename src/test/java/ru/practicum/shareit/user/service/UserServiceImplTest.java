@@ -48,7 +48,7 @@ class UserServiceImplTest {
 
         userRepository.save(user);
 
-        User retrievedUser = userService.getUserById(user.getId());
+        User retrievedUser = userService.getUserOrThrowException(user.getId());
 
         assertThat(retrievedUser, notNullValue());
         assertThat(retrievedUser.getId(), equalTo(user.getId()));
@@ -60,7 +60,7 @@ class UserServiceImplTest {
     void getUserById_InvalidId_ShouldThrowIllegalArgumentException() {
         Long invalidUserId = -1L;
 
-        assertThatThrownBy(() -> userService.getUserById(invalidUserId))
+        assertThatThrownBy(() -> userService.getUserOrThrowException(invalidUserId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Invalid user id: " + invalidUserId);
     }
@@ -70,7 +70,7 @@ class UserServiceImplTest {
     void getUserById_NonExistingUser_ShouldThrowNotFoundException() {
         Long nonExistingUserId = 999L;
 
-        assertThatThrownBy(() -> userService.getUserById(nonExistingUserId))
+        assertThatThrownBy(() -> userService.getUserOrThrowException(nonExistingUserId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("User not found with id: " + nonExistingUserId);
     }

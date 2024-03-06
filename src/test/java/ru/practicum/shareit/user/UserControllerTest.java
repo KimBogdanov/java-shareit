@@ -35,7 +35,6 @@ class UserControllerTest {
     private UserService userService;
     @Autowired
     private MockMvc mockMvc;
-
     private UserCreateUpdateDto userDto;
 
     @BeforeEach
@@ -44,11 +43,6 @@ class UserControllerTest {
                 .name("John")
                 .email("john.doe@mail.com")
                 .build();
-    }
-
-    @SneakyThrows
-    @Test
-    void getUser() {
     }
 
     @SneakyThrows

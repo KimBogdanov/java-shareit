@@ -34,7 +34,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentReadDto saveComment(Long bookerId, Long itemId, CommentCreateDto commentCreateDto) {
-        User booker = userService.getUserById(bookerId);
+        User booker = userService.getUserOrThrowException(bookerId);
         Item item = itemService.getItemById(itemId);
         verifyOwnership(bookerId, item);
         verifyBookingForUser(bookerId, item);
@@ -54,7 +54,8 @@ public class CommentServiceImpl implements CommentService {
 
     private static void verifyOwnership(Long ownerId, Item item) {
         if (item.getOwner().getId().equals(ownerId)) {
-            throw new CommentNotAllowedException("Commenting on item id: " + item.getId() + " is not allowed for owner id: " + ownerId);
+            throw new CommentNotAllowedException("Commenting on item id: " + item.getId() +
+                    " is not allowed for owner id: " + ownerId);
         }
     }
 }

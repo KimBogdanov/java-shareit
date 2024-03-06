@@ -1,9 +1,8 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingForItemReadDto;
@@ -18,38 +17,41 @@ import ru.practicum.shareit.item.comment.mapper.CommentReadMapper;
 import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.comment.repository.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemReadDto;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemCreateEditDto;
 import ru.practicum.shareit.item.mapper.ItemBookingMapper;
-import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.mapper.ItemCreateEditMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.pageRequest.PageRequestChangePageToFrom;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
-    private final ItemBookingMapper itemBookingMapper;
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ItemRequestRepository itemRequestRepository;
     private final CommentReadMapper commentReadMapper;
     private final BookingForItemReadMapper bookingForItemReadMapper;
+    private final ItemBookingMapper itemBookingMapper;
+    private final ItemCreateEditMapper itemCreateEditMapper;
+
 
     @Override
     public ItemReadDto getItemDtoById(Long itemId, Long userId) {
-        validateUserExists(userId);
+        userService.getUserOrThrowException(userId);
         Item item = getItemById(itemId);
+
         BookingForItemReadDto last = null;
         BookingForItemReadDto next = null;
         if (item.getOwner().getId().equals(userId)) {
@@ -73,8 +75,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemReadDto> findAllItemsByUserId(Long ownerId, Integer from, Integer size) {
-        validateUserExists(ownerId);
-        Page<Item> items = itemRepository.findAllByOwnerId(ownerId, PageRequest.of(from, size));
+        userService.getUserOrThrowException(ownerId);
+        Page<Item> items = itemRepository.findAllByOwnerId(
+                ownerId,
+                new PageRequestChangePageToFrom(from, size, Sort.unsorted())
+        );
         if (items == null) {
             return new ArrayList<>();
         }
@@ -101,59 +106,58 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public ItemDto saveItem(ItemDto itemDto, Long userId) {
-        User owner = getUserById(userId);
-        ItemRequest itemRequest = getItemRequestIfExistOrNull(itemDto);
-        log.info("Item request {}", itemRequest);
-        Item entity = ItemMapper.toItem(itemDto, owner, itemRequest);
-        log.info("After mapper {}", entity);
-        Item item = itemRepository.save(entity);
+    public ItemCreateEditDto saveItem(ItemCreateEditDto itemCreateEditDto, Long userId) {
+        User owner = userService.getUserOrThrowException(userId);
+        ItemRequest itemRequest = getItemRequestIfExistOrNull(itemCreateEditDto);
 
-        return ItemMapper.toItemDto(item);
+        return Optional.of(itemCreateEditDto)
+                .map(itemDto -> itemCreateEditMapper.toItem(itemDto, owner, itemRequest))
+                .map(itemRepository::save)
+                .map(itemCreateEditMapper::toItemCreateEditDto)
+                .orElseThrow(RuntimeException::new);
     }
 
-    private ItemRequest getItemRequestIfExistOrNull(ItemDto itemDto) {
-        return itemDto.getRequestId() != null ? getItemRequest(itemDto) : null;
+    private ItemRequest getItemRequestIfExistOrNull(ItemCreateEditDto itemCreateEditDto) {
+        return itemCreateEditDto.getRequestId() != null ? getItemRequest(itemCreateEditDto) : null;
     }
 
-    private ItemRequest getItemRequest(ItemDto itemDto) {
-        log.info("getItemRequest");
-        return itemRequestRepository.findById(itemDto.getRequestId())
-                .orElseThrow(() -> new NotFoundException("Not found request id: " + itemDto.getRequestId()));
+    private ItemRequest getItemRequest(ItemCreateEditDto itemCreateEditDto) {
+        return itemRequestRepository.findById(itemCreateEditDto.getRequestId())
+                .orElseThrow(() -> new NotFoundException("Not found request id: " + itemCreateEditDto.getRequestId()));
     }
 
     @Transactional
     @Override
-    public ItemDto patchItem(ItemDto itemDto, Long itemId, Long userId) {
-        User user = getUserById(userId);
+    public ItemCreateEditDto patchItem(ItemCreateEditDto itemCreateEditDto, Long itemId, Long userId) {
+        User user = userService.getUserOrThrowException(userId);
         Item newItem = getItemById(itemId);
         verifyOwnershipAndThrow(newItem, user);
 
-        if (itemDto.getName() != null) {
-            newItem.setName(itemDto.getName());
+        if (itemCreateEditDto.getName() != null) {
+            newItem.setName(itemCreateEditDto.getName());
         }
-        if (itemDto.getDescription() != null) {
-            newItem.setDescription(itemDto.getDescription());
+        if (itemCreateEditDto.getDescription() != null) {
+            newItem.setDescription(itemCreateEditDto.getDescription());
         }
-        if (itemDto.getAvailable() != null) {
-            newItem.setAvailable(itemDto.getAvailable());
+        if (itemCreateEditDto.getAvailable() != null) {
+            newItem.setAvailable(itemCreateEditDto.getAvailable());
         }
-        return ItemMapper.toItemDto(itemRepository.save(newItem));
+        return itemCreateEditMapper.toItemCreateEditDto(itemRepository.save(newItem));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> searchByString(String keyword, Long userId, Integer from, Integer size) {
-        validateUserExists(userId);
+    public List<ItemCreateEditDto> searchByString(String keyword, Long userId, Integer from, Integer size) {
+        userService.getUserOrThrowException(userId);
         if (keyword.isEmpty()) {
             return Collections.emptyList();
         }
         return itemRepository.findByDescriptionOrNameAndAvailable(
-                        keyword,
-                        PageRequest.of(from, size)
+                keyword,
+                new PageRequestChangePageToFrom(from, size, Sort.unsorted())
                 ).stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+                        .map(itemCreateEditMapper::toItemCreateEditDto)
+                        .collect(Collectors.toList());
     }
 
     private void verifyOwnershipAndThrow(Item item, User ownerId) {
@@ -181,16 +185,5 @@ public class ItemServiceImpl implements ItemService {
 
     private BookingForItemReadDto getBooking(Optional<Booking> optional) {
         return optional.map(bookingForItemReadMapper::toDto).orElse(null);
-    }
-
-    private void validateUserExists(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User not found id: " + userId);
-        }
-    }
-
-    private User getUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
     }
 }

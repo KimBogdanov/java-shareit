@@ -26,11 +26,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserReadDto getUserDtoById(Long id) {
-        return userReadMapper.toDto(getUserById(id));
+        return userReadMapper.toDto(getUserOrThrowException(id));
     }
 
     @Override
-    public User getUserById(Long id) {
+    public User getUserOrThrowException(Long id) {
         if (id <= 0) {
             throw new IllegalArgumentException("Invalid user id: " + id);
         }
@@ -64,25 +64,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserReadDto updateUser(UserCreateUpdateDto userCreateUpdateDto, Long userId) {
-        User oldUser = getUserById(userId);
+        User oldUser = getUserOrThrowException(userId);
         if (userCreateUpdateDto.getName() != null) {
             oldUser.setName(userCreateUpdateDto.getName());
         }
         if (userCreateUpdateDto.getEmail() != null && !oldUser.getEmail().equals(userCreateUpdateDto.getEmail())) {
-            if (emailExist(userCreateUpdateDto.getEmail())) {
+            if (userRepository.existsByEmail(userCreateUpdateDto.getEmail())) {
                 throw new AlreadyExistsException("This email: " + userCreateUpdateDto.getEmail() + " already use other user");
             }
             oldUser.setEmail(userCreateUpdateDto.getEmail());
         }
         return userReadMapper.toDto(userRepository.save(oldUser));
-    }
-
-    private boolean emailExist(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    @Override
-    public boolean userExistsById(Long id) {
-        return userRepository.existsById(id);
     }
 }
