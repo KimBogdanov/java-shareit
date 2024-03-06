@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
-    private final Sort SORT_BY_START_DESC = Sort.by(Sort.Order.desc("start"));
+    private final Sort sortByStartDesc = Sort.by(Sort.Order.desc("start"));
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final UserService userService;
@@ -83,35 +83,35 @@ public class BookingServiceImpl implements BookingService {
                         userId,
                         LocalDateTime.now(),
                         LocalDateTime.now(),
-                        new PageRequestChangePageToFrom(from, size, SORT_BY_START_DESC)
+                        new PageRequestChangePageToFrom(from, size, sortByStartDesc)
                 );
                 break;
             case PAST:
                 bookings = bookingRepository.findAllByBookerIdAndEndBefore(
                         userId,
                         LocalDateTime.now(),
-                        new PageRequestChangePageToFrom(from, size, SORT_BY_START_DESC)
+                        new PageRequestChangePageToFrom(from, size, sortByStartDesc)
                 );
                 break;
             case FUTURE:
                 bookings = bookingRepository.findAllByBookerIdAndStartAfter(
                         userId,
                         LocalDateTime.now(),
-                        new PageRequestChangePageToFrom(from, size, SORT_BY_START_DESC)
+                        new PageRequestChangePageToFrom(from, size, sortByStartDesc)
                 );
                 break;
             case ALL:
                 log.info("Get all");
                 bookings = bookingRepository.findAllByBookerId(
                         userId,
-                        new PageRequestChangePageToFrom(from, size, SORT_BY_START_DESC));
+                        new PageRequestChangePageToFrom(from, size, sortByStartDesc));
                 log.info("Result {}", bookings.getContent());
                 break;
             default:
                 bookings = bookingRepository.findAllByBookerIdAndStatus(
                         userId,
                         status,
-                        new PageRequestChangePageToFrom(from, size, SORT_BY_START_DESC));
+                        new PageRequestChangePageToFrom(from, size, sortByStartDesc));
         }
 
         return bookings.stream()
@@ -130,34 +130,34 @@ public class BookingServiceImpl implements BookingService {
                         ownerId,
                         LocalDateTime.now(),
                         LocalDateTime.now(),
-                        new PageRequestChangePageToFrom(from, size, SORT_BY_START_DESC)
+                        new PageRequestChangePageToFrom(from, size, sortByStartDesc)
                 );
                 break;
             case PAST:
                 bookings = bookingRepository.findAllByItem_Owner_IdAndEndBefore(
                         ownerId,
                         LocalDateTime.now(),
-                        new PageRequestChangePageToFrom(from, size, SORT_BY_START_DESC)
+                        new PageRequestChangePageToFrom(from, size, sortByStartDesc)
                 );
                 break;
             case FUTURE:
                 bookings = bookingRepository.findAllByItem_Owner_IdAndStartAfter(
                         ownerId,
                         LocalDateTime.now(),
-                        new PageRequestChangePageToFrom(from, size, SORT_BY_START_DESC)
+                        new PageRequestChangePageToFrom(from, size, sortByStartDesc)
                 );
                 break;
             case ALL:
                 bookings = bookingRepository.findAllByItem_Owner_Id(
                         ownerId,
-                        new PageRequestChangePageToFrom(from, size, SORT_BY_START_DESC)
+                        new PageRequestChangePageToFrom(from, size, sortByStartDesc)
                 );
                 break;
             default:
                 bookings = bookingRepository.findAllByItem_Owner_IdAndStatus(
                         ownerId,
                         status,
-                        new PageRequestChangePageToFrom(from, size, SORT_BY_START_DESC));
+                        new PageRequestChangePageToFrom(from, size, sortByStartDesc));
         }
         return bookings.stream()
                 .map(bookingWithItemMapper::mapBookingToBookingWithItemDto)
