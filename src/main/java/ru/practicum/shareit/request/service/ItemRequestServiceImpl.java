@@ -54,10 +54,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestInfoDto> getItemRequestsByUserId(Long requesterId) {
+    public List<ItemRequestInfoDto> getAllRequestsByRequesterId(Long requesterId) {
         userService.getUserOrThrowException(requesterId);
 
-        List<ItemRequest> requests = itemRequestRepository.findAllByRequesterId(requesterId);
+        List<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdOrderByCreated(requesterId);
         Map<Long, List<ItemCreateEditDto>> itemDtoMap = getItemDtoMap(requests);
 
         return requests.stream()
@@ -82,7 +82,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public ItemRequestInfoDto getItemRequestsId(Long userId, Long requestId) {
+    public ItemRequestInfoDto getItemRequestById(Long userId, Long requestId) {
         userService.getUserOrThrowException(userId);
         ItemRequest itemRequest = getRequest(requestId);
         List<Item> items = itemRepository.findAllByRequestId(requestId);

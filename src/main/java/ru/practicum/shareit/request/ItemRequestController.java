@@ -26,13 +26,13 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestInfoDto> getRequesterItemRequests(@RequestHeader("X-Sharer-User-Id") Long requesterId) {
-        log.info("getOwnerItemRequests user id: {}", requesterId);
-        return itemRequestService.getItemRequestsByUserId(requesterId);
+    public List<ItemRequestInfoDto> getAllRequesterRequests(@RequestHeader("X-Sharer-User-Id") Long requesterId) {
+        log.info("getAllRequesterRequest requester id: {}", requesterId);
+        return itemRequestService.getAllRequestsByRequesterId(requesterId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestInfoDto> getAllRequestItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemRequestInfoDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                       @RequestParam(defaultValue = "0") Integer from,
                                                       @RequestParam(defaultValue = "10") Integer size) {
         log.info("getAllRequestItem user id {}, from: {}, size: {}", userId, from, size);
@@ -42,10 +42,10 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestInfoDto getItemRequestInfoDto(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemRequestInfoDto getRequestByRequestId(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                     @PathVariable Long requestId) {
         log.info("getItemRequestInfoDto user id: {}, request id: {}", userId, requestId);
-        return itemRequestService.getItemRequestsId(userId, requestId);
+        return itemRequestService.getItemRequestById(userId, requestId);
     }
 
     private static void checkRequestParamAndThrowException(Integer from, Integer size) {

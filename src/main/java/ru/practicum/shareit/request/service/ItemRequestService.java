@@ -11,9 +11,9 @@ import java.util.List;
 public interface ItemRequestService {
     ItemRequestReadDto save(ItemRequestCreatDto itemRequestReadDto, Long requester);
 
-    List<ItemRequestInfoDto> getItemRequestsByUserId(Long requesterId);
+    List<ItemRequestInfoDto> getAllRequestsByRequesterId(Long requesterId);
 
     List<ItemRequestInfoDto> getAllRequestItem(Long userId, Integer from, Integer size);
 
-    ItemRequestInfoDto getItemRequestsId(Long userId, Long requestId);
+    ItemRequestInfoDto getItemRequestById(Long userId, Long requestId);
 }
