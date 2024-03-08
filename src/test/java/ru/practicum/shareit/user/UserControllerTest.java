@@ -45,8 +45,8 @@ class UserControllerTest {
                 .build();
     }
 
-    @SneakyThrows
     @Test
+    @SneakyThrows
     @DisplayName("Успешное добавление user")
     void saveUser() {
         UserReadDto userReadDto = UserReadDto.builder()
@@ -96,10 +96,10 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @DisplayName("Выброс исключени я при повторении email")
+    @DisplayName("Выброс исключения при повторении email")
     void updateUser_InvalidData_ShouldReturnError() {
         UserCreateUpdateDto invalidDto = UserCreateUpdateDto.builder()
-                .name("Invalid Name")  // Invalid data
+                .name("Invalid Name")
                 .email("invalid.email@example.com")
                 .build();
 
