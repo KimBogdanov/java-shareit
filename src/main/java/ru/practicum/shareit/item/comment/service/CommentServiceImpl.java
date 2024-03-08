@@ -54,8 +54,7 @@ public class CommentServiceImpl implements CommentService {
 
     private static void verifyOwnership(Long ownerId, Item item) {
         if (item.getOwner().getId().equals(ownerId)) {
-            throw new CommentNotAllowedException("Commenting on item id: " + item.getId() +
-                    " is not allowed for owner id: " + ownerId);
+            throw new CommentNotAllowedException("User id: " + ownerId + " is owner  item id: " + item.getId());
         }
     }
 }
