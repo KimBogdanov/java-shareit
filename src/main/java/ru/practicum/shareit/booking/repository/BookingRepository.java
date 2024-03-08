@@ -28,9 +28,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                          Pageable pageable);
 
     Page<Booking> findAllByBookerIdAndStartBeforeAndEndAfter(Long bookerId,
-                                                                             LocalDateTime currentTime,
-                                                                             LocalDateTime currentTime2,
-                                                                             Pageable pageable);
+                                                             LocalDateTime currentTime,
+                                                             LocalDateTime currentTime2,
+                                                             Pageable pageable);
 
     Page<Booking> findBookingByItem_Owner_IdAndStartBeforeAndEndAfter(Long ownerId,
                                                                       LocalDateTime currentTime,

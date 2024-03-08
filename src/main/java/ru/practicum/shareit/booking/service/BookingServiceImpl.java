@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -73,7 +72,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingReadDto> getBookings(Long userId, Status status, Integer from, Integer size) {
+    public List<BookingReadDto> getAllBookingsForBooker(Long userId, Status status, Integer from, Integer size) {
         userService.getUserOrThrowException(userId);
         Page<Booking> bookings;
 
@@ -101,11 +100,9 @@ public class BookingServiceImpl implements BookingService {
                 );
                 break;
             case ALL:
-                log.info("Get all");
                 bookings = bookingRepository.findAllByBookerId(
                         userId,
                         new PageRequestChangePageToFrom(from, size, sortByStartDesc));
-                log.info("Result {}", bookings.getContent());
                 break;
             default:
                 bookings = bookingRepository.findAllByBookerIdAndStatus(
@@ -120,7 +117,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingReadDto> getBookingItem(Long ownerId, Status status, Integer from, Integer size) {
+    public List<BookingReadDto> getBookingsForOwnerItem(Long ownerId, Status status, Integer from, Integer size) {
         userService.getUserOrThrowException(ownerId);
         Page<Booking> bookings;
 
@@ -196,7 +193,7 @@ public class BookingServiceImpl implements BookingService {
 
     public void verifyOwnershipAndThrowException(Item item, User owner) {
         if (!item.getOwner().equals(owner)) {
-            throw new NotOwnedException("Item id = " + item.getId() + " does not belong to user userId = " + owner);
+            throw new NotOwnedException("Item id = " + item.getId() + " does not belong to user userId = " + owner.getId());
         }
     }
 

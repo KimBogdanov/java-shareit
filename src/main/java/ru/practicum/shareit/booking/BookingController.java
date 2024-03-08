@@ -48,7 +48,7 @@ public class BookingController {
         log.info("GetBookings user id: {}, state: {}", userId, state);
         Status status = getStatus(state);
         checkRequestParamAndThrowException(from, size);
-        return bookingService.getBookings(userId, status, from, size);
+        return bookingService.getAllBookingsForBooker(userId, status, from, size);
     }
 
     @GetMapping("/owner")
@@ -59,7 +59,7 @@ public class BookingController {
         log.info("GetBookingItem for owner id: {}, state: {}", ownerId, state);
         Status status = getStatus(state);
         checkRequestParamAndThrowException(from, size);
-        return bookingService.getBookingItem(ownerId, status, from, size);
+        return bookingService.getBookingsForOwnerItem(ownerId, status, from, size);
     }
 
     private static Status getStatus(String state) {
