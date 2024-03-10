@@ -185,6 +185,11 @@
 						<output>file</output>
 						<excludes>
 							<exclude>**/*ExceptionHandlerApi.class</exclude>
+							<exclude>**/*BookingMapperImpl.class</exclude>
+							<exclude>**/*ItemCreateEditMapperImpl.class</exclude>
+							<exclude>**/*ItemBookingMapperImpl.class</exclude>
+							<exclude>**/*CommentMapperImpl.class</exclude>
+							<exclude>**/*CommentReadMapperImpl.class</exclude>
 						</excludes>
 					</configuration>
 					<executions>
