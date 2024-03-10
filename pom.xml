@@ -190,6 +190,8 @@
 							<exclude>**/*ItemBookingMapperImpl.class</exclude>
 							<exclude>**/*CommentMapperImpl.class</exclude>
 							<exclude>**/*CommentReadMapperImpl.class</exclude>
+							<exclude>**/*ItemRequestCreatMapperImpl.class</exclude>
+							<exclude>**/*ItemRequestInfoMapperImpl.class</exclude>
 						</excludes>
 					</configuration>
 					<executions>
