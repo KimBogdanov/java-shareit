@@ -33,8 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ItemController.class)
 @AutoConfigureMockMvc
 class ItemControllerTest {
-    public final String UserIdHeader = "X-Sharer-User-Id";
-    private final LocalDateTime CREATED = LocalDateTime.parse("2026-03-12T11:44:51.000000000");
+    public final String userIdHeader = "X-Sharer-User-Id";
+    private final LocalDateTime created = LocalDateTime.parse("2026-03-12T11:44:51.000000000");
     private final DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     @Autowired
     ObjectMapper mapper;
@@ -59,7 +59,7 @@ class ItemControllerTest {
                 .thenReturn(itemReadDtoList);
 
         mockMvc.perform(get("/items")
-                        .header(UserIdHeader, userId))
+                        .header(userIdHeader, userId))
                 .andExpect(jsonPath("$.[0].id").value(itemReadDto.getId()))
                 .andExpect(jsonPath("$.[0].name").value(itemReadDto.getName()))
                 .andExpect(jsonPath("$.[0].description").value(itemReadDto.getDescription()))
@@ -81,7 +81,7 @@ class ItemControllerTest {
         int size = 1;
 
         mockMvc.perform(get("/items")
-                        .header(UserIdHeader, userId)
+                        .header(userIdHeader, userId)
                         .param("from", Integer.toString(from))
                         .param("size", Integer.toString(size)))
                 .andExpect(status().isBadRequest())
@@ -105,7 +105,7 @@ class ItemControllerTest {
                 .thenReturn(itemReadDto);
 
         mockMvc.perform(get("/items/{itemId}", itemId)
-                        .header(UserIdHeader, userId))
+                        .header(userIdHeader, userId))
                 .andExpect(jsonPath("$.id").value(itemReadDto.getId()))
                 .andExpect(jsonPath("$.name").value(itemReadDto.getName()))
                 .andExpect(jsonPath("$.description").value(itemReadDto.getDescription()))
@@ -135,7 +135,7 @@ class ItemControllerTest {
                 .thenReturn(itemCreateEditDtoArrayList);
 
         mockMvc.perform(get("/items/search")
-                        .header(UserIdHeader, userId)
+                        .header(userIdHeader, userId)
                         .param("text", "text"))
                 .andExpect(jsonPath("$.[0].id").value(itemCreateEditDto.getId()))
                 .andExpect(jsonPath("$.[0].name").value(itemCreateEditDto.getName()))
@@ -156,7 +156,7 @@ class ItemControllerTest {
         int size = 1;
 
         mockMvc.perform(get("/items/search")
-                        .header(UserIdHeader, userId)
+                        .header(userIdHeader, userId)
                         .param("text", "text")
                         .param("from", Integer.toString(from))
                         .param("size", Integer.toString(size)))
@@ -178,7 +178,7 @@ class ItemControllerTest {
         int size = 1;
 
         mockMvc.perform(get("/items/search")
-                        .header(UserIdHeader, userId)
+                        .header(userIdHeader, userId)
                         .param("from", Integer.toString(from))
                         .param("size", Integer.toString(size)))
                 .andExpect(status().isBadRequest());
@@ -206,7 +206,7 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(itemCreateEditDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header(UserIdHeader, userId))
+                        .header(userIdHeader, userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(itemId))
                 .andExpect(jsonPath("$.name").value(itemName))
@@ -236,7 +236,7 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(itemCreateEditDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header(UserIdHeader, userId))
+                        .header(userIdHeader, userId))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
 
@@ -264,7 +264,7 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(itemCreateEditDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header(UserIdHeader, userId))
+                        .header(userIdHeader, userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(itemId))
                 .andExpect(jsonPath("$.name").value(itemName))
@@ -289,7 +289,7 @@ class ItemControllerTest {
                 .id(commentId)
                 .text(commentCreateDto.getText())
                 .authorName("authorName")
-                .created(CREATED)
+                .created(created)
                 .build();
 
         when(commentService.saveComment(anyLong(), anyLong(), any(CommentCreateDto.class)))
@@ -300,11 +300,11 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(commentCreateDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header(UserIdHeader, userId))
+                        .header(userIdHeader, userId))
                 .andExpect(jsonPath("$.id").value(commentReadDto.getId()))
                 .andExpect(jsonPath("$.text").value(commentReadDto.getText()))
                 .andExpect(jsonPath("$.authorName").value(commentReadDto.getAuthorName()))
-                .andExpect(jsonPath("$.created").value(CREATED.format(pattern)));
+                .andExpect(jsonPath("$.created").value(created.format(pattern)));
 
         Mockito.verify(commentService, Mockito.times(1))
                 .saveComment(userId, itemId, commentCreateDto);
@@ -324,7 +324,7 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(commentCreateDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header(UserIdHeader, userId))
+                        .header(userIdHeader, userId))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
 

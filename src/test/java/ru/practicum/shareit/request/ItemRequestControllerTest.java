@@ -29,8 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ItemRequestController.class)
 @AutoConfigureMockMvc
 class ItemRequestControllerTest {
-    public final String UserIdHeader = "X-Sharer-User-Id";
-    private final LocalDateTime CREATED = LocalDateTime.parse("2026-03-12T11:44:51.000000000");
+    public final String userIdHeader = "X-Sharer-User-Id";
+    private final LocalDateTime created = LocalDateTime.parse("2026-03-12T11:44:51.000000000");
     private final DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     @Autowired
     ObjectMapper mapper;
@@ -50,7 +50,7 @@ class ItemRequestControllerTest {
         ItemRequestReadDto itemRequestReadDto = ItemRequestReadDto.builder()
                 .id(requestId)
                 .description(itemRequestCreatDto.getDescription())
-                .created(CREATED)
+                .created(created)
                 .build();
 
         when(itemRequestService.save(any(), anyLong()))
@@ -61,7 +61,7 @@ class ItemRequestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(itemRequestCreatDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header(UserIdHeader, userId))
+                        .header(userIdHeader, userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(itemRequestReadDto.getId()))
                 .andExpect(jsonPath("$.description").value(itemRequestReadDto.getDescription()))

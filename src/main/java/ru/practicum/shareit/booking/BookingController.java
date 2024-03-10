@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 public class BookingController {
-    private final String UserIdHeader = "X-Sharer-User-Id";
+    private final String userIdHeader = "X-Sharer-User-Id";
     private final BookingService bookingService;
 
     /**
@@ -27,7 +27,7 @@ public class BookingController {
      * @return Объект {@link BookingReadDto} предоставляющий сохраненный booking.
      */
     @PostMapping
-    public BookingReadDto saveBooking(@RequestHeader(UserIdHeader) Long bookerId,
+    public BookingReadDto saveBooking(@RequestHeader(userIdHeader) Long bookerId,
                                       @Valid @RequestBody BookingCreateDto bookingCreateDto) {
         log.info("Save booking id item: {}", bookingCreateDto.getItemId());
         return bookingService.saveBooking(bookerId, bookingCreateDto);
@@ -42,7 +42,7 @@ public class BookingController {
      * @return Объект {@link BookingReadDto} предоставляющий booking.
      */
     @PatchMapping("/{bookingId}")
-    public BookingReadDto approvedBooking(@RequestHeader(UserIdHeader) Long ownerId,
+    public BookingReadDto approvedBooking(@RequestHeader(userIdHeader) Long ownerId,
                                           @PathVariable Long bookingId,
                                           @RequestParam boolean approved) {
         log.info("Booking id: {} is {} owner id: {}", bookingId, approved, ownerId);
@@ -57,7 +57,7 @@ public class BookingController {
      * @return Объект {@link BookingReadDto} предоставляющий booking.
      */
     @GetMapping("/{bookingId}")
-    public BookingReadDto getStatus(@RequestHeader(UserIdHeader) Long userId,
+    public BookingReadDto getStatus(@RequestHeader(userIdHeader) Long userId,
                                     @PathVariable Long bookingId) {
         log.info("Get status bookingId: {} User id: {}", bookingId, userId);
         return bookingService.getStatus(userId, bookingId);
@@ -73,7 +73,7 @@ public class BookingController {
      * @return Списаок объектов {@link BookingReadDto} предоставляющий booking.
      */
     @GetMapping()
-    public List<BookingReadDto> getAllBookingsForBooker(@RequestHeader(UserIdHeader) Long userId,
+    public List<BookingReadDto> getAllBookingsForBooker(@RequestHeader(userIdHeader) Long userId,
                                                         @RequestParam(required = false, defaultValue = "ALL") String state,
                                                         @RequestParam(defaultValue = "0") Integer from,
                                                         @RequestParam(defaultValue = "10") Integer size) {
@@ -93,7 +93,7 @@ public class BookingController {
      * @return Списаок объектов {@link BookingReadDto} предоставляющий booking.
      */
     @GetMapping("/owner")
-    public List<BookingReadDto> getBookingsForOwnerItem(@RequestHeader(UserIdHeader) Long ownerId,
+    public List<BookingReadDto> getBookingsForOwnerItem(@RequestHeader(userIdHeader) Long ownerId,
                                                         @RequestParam(required = false, defaultValue = "ALL") String state,
                                                         @RequestParam(defaultValue = "0") Integer from,
                                                         @RequestParam(defaultValue = "10") Integer size) {
