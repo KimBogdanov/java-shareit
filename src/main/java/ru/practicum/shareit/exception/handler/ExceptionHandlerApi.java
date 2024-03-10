@@ -42,13 +42,10 @@ public class ExceptionHandlerApi {
 
     @ExceptionHandler()
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-        List<String> errorMessages = e.getBindingResult().getFieldErrors().stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.toList());
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("Method Argument Not Valid", errorMessages.toString()));
+                .body(new ErrorResponse("Method Argument Not Valid", e.getMessage()));
     }
 
     @ExceptionHandler()
