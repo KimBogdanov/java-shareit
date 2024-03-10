@@ -18,8 +18,23 @@ import java.util.List;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
+    private final String UserIdHeader = "X-Sharer-User-Id";
     private final ItemService itemService;
     private final CommentService commentService;
+
+    /**
+     * Добавление новой вещи.
+     *
+     * @param userId            Идентификатор пользователя-владельца вещи.
+     * @param itemCreateEditDto Объект {@link ItemCreateEditDto}, описывающий новую вещь.
+     * @return Объект {@link ItemCreateEditDto}, представляющий сохраненную вещь.
+     */
+    @PostMapping
+    public ItemCreateEditDto saveItem(@RequestHeader(UserIdHeader) Long userId,
+                                      @Valid @RequestBody ItemCreateEditDto itemCreateEditDto) {
+        log.info("Save item name: {}, owner id: {}", itemCreateEditDto.getName(), userId);
+        return itemService.saveItem(itemCreateEditDto, userId);
+    }
 
     /**
      * Получает список товаров, связанных с указанным пользователем.
@@ -31,7 +46,7 @@ public class ItemController {
      * @throws IllegalArgumentException Если параметры 'from' или 'size' являются недопустимыми.
      */
     @GetMapping()
-    public List<ItemReadDto> getAllItemsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemReadDto> getAllItemsByUserId(@RequestHeader(UserIdHeader) Long userId,
                                                  @RequestParam(defaultValue = "0") Integer from,
                                                  @RequestParam(defaultValue = "10") Integer size) {
         log.info("Get all the user's items. User id: {}", userId);
@@ -46,7 +61,7 @@ public class ItemController {
      * @return Объект {@link ItemReadDto}, описывающий вещь.
      */
     @GetMapping("/{itemId}")
-    public ItemReadDto getItemById(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemReadDto getItemById(@RequestHeader(UserIdHeader) Long userId,
                                    @PathVariable Long itemId) {
         log.info("GetItemById item id {} for user id {}", itemId, userId);
         return itemService.getItemDtoById(itemId, userId);
@@ -63,7 +78,7 @@ public class ItemController {
      * @throws IllegalArgumentException Если значения from или size меньше 0.
      */
     @GetMapping("/search")
-    public List<ItemCreateEditDto> searchItems(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemCreateEditDto> searchItems(@RequestHeader(UserIdHeader) Long userId,
                                                @RequestParam String text,
                                                @RequestParam(defaultValue = "0") Integer from,
                                                @RequestParam(defaultValue = "10") Integer size) {
@@ -73,29 +88,15 @@ public class ItemController {
     }
 
     /**
-     * Добавление новой вещи.
-     *
-     * @param userId  Идентификатор пользователя-владельца вещи.
-     * @param itemCreateEditDto Объект {@link ItemCreateEditDto}, описывающий новую вещь.
-     * @return Объект {@link ItemCreateEditDto}, представляющий сохраненную вещь.
-     */
-    @PostMapping
-    public ItemCreateEditDto saveItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                      @Valid @RequestBody ItemCreateEditDto itemCreateEditDto) {
-        log.info("Save item name: {}, owner id: {}", itemCreateEditDto.getName(), userId);
-        return itemService.saveItem(itemCreateEditDto, userId);
-    }
-
-    /**
      * Редактирование вещи.
      *
-     * @param userId  Идентификатор пользователя-владельца вещи.
-     * @param itemId  Идентификатор вещи, которую нужно отредактировать.
+     * @param userId            Идентификатор пользователя-владельца вещи.
+     * @param itemId            Идентификатор вещи, которую нужно отредактировать.
      * @param itemCreateEditDto Объект {@link ItemCreateEditDto}, содержащий поля для редактирования.
      * @return Объект {@link ItemCreateEditDto}, представляющий отредактированную вещь.
      */
     @PatchMapping("/{itemId}")
-    public ItemCreateEditDto patchItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemCreateEditDto patchItem(@RequestHeader(UserIdHeader) Long userId,
                                        @PathVariable Long itemId,
                                        @RequestBody ItemCreateEditDto itemCreateEditDto) {
         log.info("Patch item name: {}, owner id: {}", itemCreateEditDto.getId(), userId);
@@ -105,14 +106,13 @@ public class ItemController {
     /**
      * Сохраняет новый комментарий для конкретного item.
      *
-     * @param userId              Идентификатор пользователя, полученный из заголовка "X-Sharer-User-Id".
-     * @param itemId              Идентификатор item, для которого сохраняется комментарий.
-     * @param commentCreateDto    Объект передачи данных (DTO) с информацией для создания комментария.
-     *
-     * @return                    Объект CommentReadDto, представляющий сохраненный комментарий.
+     * @param userId           Идентификатор пользователя, полученный из заголовка "X-Sharer-User-Id".
+     * @param itemId           Идентификатор item, для которого сохраняется комментарий.
+     * @param commentCreateDto Объект передачи данных (DTO) с информацией для создания комментария.
+     * @return Объект CommentReadDto, представляющий сохраненный комментарий.
      */
     @PostMapping({"/{itemId}/comment"})
-    public CommentReadDto saveComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public CommentReadDto saveComment(@RequestHeader(UserIdHeader) Long userId,
                                       @PathVariable Long itemId,
                                       @Valid @RequestBody CommentCreateDto commentCreateDto) {
         log.info("Save comment item id");

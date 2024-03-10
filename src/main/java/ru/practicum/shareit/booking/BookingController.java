@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 public class BookingController {
-    public static final String UserIdHeader = "X-Sharer-User-Id";
+    private final String UserIdHeader = "X-Sharer-User-Id";
     private final BookingService bookingService;
 
     /**
@@ -87,9 +87,9 @@ public class BookingController {
      * Получение списка booking для владельца вещей.
      *
      * @param ownerId Идентификатор user, владелец бронированных вещей.
-     * @param state  Значение фильтра для возвращаемых объектов.
-     * @param from   Начальный индекс для постраничного результата (по умолцанию 0).
-     * @param size   Максимальное количество booking на странице (по умолчанию 10).
+     * @param state   Значение фильтра для возвращаемых объектов.
+     * @param from    Начальный индекс для постраничного результата (по умолцанию 0).
+     * @param size    Максимальное количество booking на странице (по умолчанию 10).
      * @return Списаок объектов {@link BookingReadDto} предоставляющий booking.
      */
     @GetMapping("/owner")

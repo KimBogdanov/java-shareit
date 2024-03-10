@@ -31,13 +31,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BookingController.class)
 @AutoConfigureMockMvc
 class BookingControllerTest {
-    public final String START = "2026-03-11T11:44:51.000000000";
-    public final String END = "2026-03-12T11:44:51.000000000";
+    private final String UserIdHeader = "X-Sharer-User-Id";
+    private final String START = "2026-03-11T11:44:51.000000000";
+    private final String END = "2026-03-12T11:44:51.000000000";
+    private final DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     @Autowired
     ObjectMapper mapper;
     @MockBean
     private BookingService bookingService;
-    private final DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     @Autowired
     private MockMvc mockMvc;
 
@@ -60,7 +61,7 @@ class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(bookingCreateDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", bookerId))
+                        .header(UserIdHeader, bookerId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(bookingReadDto.getId()))
                 .andExpect(jsonPath("$.start").value(bookingReadDto.getStart().format(pattern)))
@@ -70,8 +71,7 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.booker.id").value(bookingReadDto.getBooker().getId()))
                 .andExpect(jsonPath("$.status").value(bookingReadDto.getStatus().toString()));
 
-        Mockito.verify(bookingService,
-                        Mockito.times(1))
+        Mockito.verify(bookingService, Mockito.times(1))
                 .saveBooking(bookerId, bookingCreateDto);
     }
 
@@ -81,15 +81,14 @@ class BookingControllerTest {
     void saveBookingWithoutStart() {
         Long bookerId = 1L;
         Long itemId = 1L;
-        LocalDateTime startTime = null;
         LocalDateTime endTime = LocalDateTime.parse(END);
-        BookingCreateDto bookingCreateDto = getBookingCreateDto(startTime, endTime, itemId);
+        BookingCreateDto bookingCreateDto = getBookingCreateDto(null, endTime, itemId);
         mockMvc.perform(post("/bookings")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(bookingCreateDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", bookerId))
+                        .header(UserIdHeader, bookerId))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
     }
@@ -101,14 +100,13 @@ class BookingControllerTest {
         Long bookerId = 1L;
         Long itemId = 1L;
         LocalDateTime startTime = LocalDateTime.parse(START);
-        LocalDateTime endTime = null;
-        BookingCreateDto bookingCreateDto = getBookingCreateDto(startTime, endTime, itemId);
+        BookingCreateDto bookingCreateDto = getBookingCreateDto(startTime, null, itemId);
         mockMvc.perform(post("/bookings")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(bookingCreateDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", bookerId))
+                        .header(UserIdHeader, bookerId))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
     }
@@ -118,16 +116,15 @@ class BookingControllerTest {
     @DisplayName("Добавление booking без указния ItemId")
     void saveBookingWithoutItemId() {
         Long bookerId = 1L;
-        Long itemId = null;
         LocalDateTime startTime = LocalDateTime.parse(START);
         LocalDateTime endTime = LocalDateTime.parse(END);
-        BookingCreateDto bookingCreateDto = getBookingCreateDto(startTime, endTime, itemId);
+        BookingCreateDto bookingCreateDto = getBookingCreateDto(startTime, endTime, null);
         mockMvc.perform(post("/bookings")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(bookingCreateDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", bookerId))
+                        .header(UserIdHeader, bookerId))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
     }
@@ -146,7 +143,7 @@ class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(bookingCreateDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", bookerId))
+                        .header(UserIdHeader, bookerId))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
     }
@@ -165,7 +162,7 @@ class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(bookingCreateDto))
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", bookerId))
+                        .header(UserIdHeader, bookerId))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
     }
@@ -189,7 +186,7 @@ class BookingControllerTest {
 
         mockMvc.perform(patch("/bookings/{bookingId}", bookingId)
                         .param("approved", Boolean.toString(approved))
-                        .header("X-Sharer-User-Id", ownerId))
+                        .header(UserIdHeader, ownerId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(bookingReadDto.getId()))
                 .andExpect(jsonPath("$.start").value(bookingReadDto.getStart().format(pattern)))
@@ -221,7 +218,7 @@ class BookingControllerTest {
                 .thenReturn(bookingReadDto);
 
         mockMvc.perform(get("/bookings/{bookingId}", bookingId)
-                        .header("X-Sharer-User-Id", ownerId))
+                        .header(UserIdHeader, ownerId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(bookingReadDto.getId()))
                 .andExpect(jsonPath("$.start").value(bookingReadDto.getStart().format(pattern)))
@@ -256,7 +253,7 @@ class BookingControllerTest {
                 .thenReturn(listReadDto);
 
         mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", bookerId)
+                        .header(UserIdHeader, bookerId)
                         .param("from", from.toString())
                         .param("size", size.toString())
                         .param("state", state.toString()))
@@ -283,7 +280,7 @@ class BookingControllerTest {
         Status state = Status.ALL;
 
         mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", bookerId)
+                        .header(UserIdHeader, bookerId)
                         .param("from", from.toString())
                         .param("size", size.toString())
                         .param("state", state.toString()))
@@ -305,7 +302,7 @@ class BookingControllerTest {
         String state = "incorrect";
 
         mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", bookerId)
+                        .header(UserIdHeader, bookerId)
                         .param("from", Integer.toString(from))
                         .param("size", Integer.toString(size))
                         .param("state", state))
@@ -338,7 +335,7 @@ class BookingControllerTest {
                 .thenReturn(listReadDto);
 
         mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", ownerId)
+                        .header(UserIdHeader, ownerId)
                         .param("from", from.toString())
                         .param("size", size.toString())
                         .param("state", state.toString()))
@@ -365,7 +362,7 @@ class BookingControllerTest {
         Status state = Status.ALL;
 
         mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", ownerId)
+                        .header(UserIdHeader, ownerId)
                         .param("from", from.toString())
                         .param("size", size.toString())
                         .param("state", state.toString()))
@@ -387,7 +384,7 @@ class BookingControllerTest {
         String state = "incorrect";
 
         mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", ownerId)
+                        .header(UserIdHeader, ownerId)
                         .param("from", Integer.toString(from))
                         .param("size", Integer.toString(size))
                         .param("state", state))
