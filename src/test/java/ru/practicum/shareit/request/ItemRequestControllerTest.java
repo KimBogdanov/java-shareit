@@ -138,6 +138,22 @@ class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
+    @DisplayName("Получние всех requests")
+    void getAllRequestsIncorrectSize() {
+        Long userId = 2L;
+        int size = 0;
+        mockMvc.perform(get("/requests/all")
+                        .header(userIdHeader, userId)
+                        .param("size", Integer.toString(size)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Request param incorrect"))
+                .andExpect(jsonPath("$.description").value("Illegal Argument Exception"));
+        Mockito.verify(itemRequestService, Mockito.never())
+                .getAllRequestItem(anyLong(), anyInt(), anyInt());
+    }
+
+    @Test
+    @SneakyThrows
     @DisplayName("Получение request по id")
     void getRequestByRequestId() {
         Long requestId = 1L;
