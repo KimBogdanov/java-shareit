@@ -16,23 +16,24 @@ import java.util.List;
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
 public class ItemRequestController {
+    public final String UserIdHeader = "X-Sharer-User-Id";
     private final ItemRequestService itemRequestService;
 
     @PostMapping
-    public ItemRequestReadDto saveItemRequest(@RequestHeader("X-Sharer-User-Id") Long requesterId,
+    public ItemRequestReadDto saveItemRequest(@RequestHeader(UserIdHeader) Long requesterId,
                                               @Valid @RequestBody ItemRequestCreatDto dto) {
         log.info("SaveItemRequest user id: {}, request description {}", requesterId, dto.getDescription());
         return itemRequestService.save(dto, requesterId);
     }
 
     @GetMapping
-    public List<ItemRequestInfoDto> getAllRequesterRequests(@RequestHeader("X-Sharer-User-Id") Long requesterId) {
+    public List<ItemRequestInfoDto> getAllRequestsByRequesterId(@RequestHeader(UserIdHeader) Long requesterId) {
         log.info("getAllRequesterRequest requester id: {}", requesterId);
         return itemRequestService.getAllRequestsByRequesterId(requesterId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestInfoDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemRequestInfoDto> getAllRequests(@RequestHeader(UserIdHeader) Long userId,
                                                       @RequestParam(defaultValue = "0") Integer from,
                                                       @RequestParam(defaultValue = "10") Integer size) {
         log.info("getAllRequestItem user id {}, from: {}, size: {}", userId, from, size);
@@ -42,7 +43,7 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestInfoDto getRequestByRequestId(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemRequestInfoDto getRequestByRequestId(@RequestHeader(UserIdHeader) Long userId,
                                                     @PathVariable Long requestId) {
         log.info("getItemRequestInfoDto user id: {}, request id: {}", userId, requestId);
         return itemRequestService.getItemRequestById(userId, requestId);
