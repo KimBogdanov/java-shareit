@@ -1,14 +1,11 @@
 package ru.practicum.shareit.item.service;
 
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.dto.ItemReadDto;
 import ru.practicum.shareit.item.dto.ItemCreateEditDto;
 import ru.practicum.shareit.item.model.Item;
 
-
 import java.util.List;
 
-@Transactional(readOnly = true)
 public interface ItemService {
     Item getItemById(Long id);
 

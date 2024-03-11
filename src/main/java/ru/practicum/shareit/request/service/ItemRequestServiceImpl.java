@@ -50,7 +50,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .map(request -> itemRequestCreatMapper.toItemRequest(itemRequestReadDto, requester, LocalDateTime.now()))
                 .map(itemRequestRepository::save)
                 .map(itemRequestReadMapper::toRequestReadDto)
-                .orElseThrow(RuntimeException::new);
+                .get();
     }
 
     @Override
@@ -61,10 +61,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         Map<Long, List<ItemCreateEditDto>> itemDtoMap = getItemDtoMap(requests);
 
         return requests.stream()
-                .map(request -> itemRequestInfoMapper.toDto(
-                        request,
-                        itemDtoMap.get(request.getId()) == null ? // надо покумекать
-                                Collections.emptyList() : itemDtoMap.get(request.getId())))
+                .map(request -> {
+                    List<ItemCreateEditDto> itemDtos = itemDtoMap.computeIfAbsent(request.getId(), k -> Collections.emptyList());
+                    return itemRequestInfoMapper.toDto(request, itemDtos);
+                })
                 .collect(Collectors.toList());
     }
 
