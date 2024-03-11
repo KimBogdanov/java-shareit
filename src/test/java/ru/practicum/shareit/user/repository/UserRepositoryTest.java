@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
+
     @Test
     @DisplayName("Вернет true если email уже используется")
     public void testExistsByEmail() {
