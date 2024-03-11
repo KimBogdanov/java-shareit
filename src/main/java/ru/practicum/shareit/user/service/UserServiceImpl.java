@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
                 .map(userCreateUpdateMapper::toModel)
                 .map(userRepository::save)
                 .map(userReadMapper::toDto)
-                .orElseThrow(RuntimeException::new);
+                .get();
     }
 
     @Transactional

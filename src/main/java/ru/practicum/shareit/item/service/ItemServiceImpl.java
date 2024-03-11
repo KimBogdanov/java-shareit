@@ -114,7 +114,7 @@ public class ItemServiceImpl implements ItemService {
                 .map(itemDto -> itemCreateEditMapper.toItem(itemDto, owner, itemRequest))
                 .map(itemRepository::save)
                 .map(itemCreateEditMapper::toItemCreateEditDto)
-                .orElseThrow(RuntimeException::new);
+                .get();
     }
 
     private ItemRequest getItemRequestIfExistOrNull(ItemCreateEditDto itemCreateEditDto) {

@@ -98,10 +98,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     private Map<Long, List<ItemCreateEditDto>> getItemDtoMap(List<ItemRequest> requests) {
-        List<Long> requestIds = requests.stream()
+        List<Long> requestsId = requests.stream()
                 .map(ItemRequest::getId)
                 .collect(Collectors.toList());
-        List<Item> items = itemRepository.findAllByRequestIds(requestIds);
+        List<Item> items = itemRepository.findAllByRequestIdIn(requestsId);
 
         return items.stream()
                 .collect(Collectors.groupingBy(
