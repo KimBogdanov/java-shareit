@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.comment.service;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.enums.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.CommentNotAllowedException;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 @Data
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final ItemService itemService;
@@ -33,8 +35,9 @@ public class CommentServiceImpl implements CommentService {
     private final CommentReadMapper commentReadMapper;
 
     @Override
+    @Transactional
     public CommentReadDto saveComment(Long bookerId, Long itemId, CommentCreateDto commentCreateDto) {
-        User booker = userService.getUserById(bookerId);
+        User booker = userService.getUserOrThrowException(bookerId);
         Item item = itemService.getItemById(itemId);
         verifyOwnership(bookerId, item);
         verifyBookingForUser(bookerId, item);
@@ -54,7 +57,7 @@ public class CommentServiceImpl implements CommentService {
 
     private static void verifyOwnership(Long ownerId, Item item) {
         if (item.getOwner().getId().equals(ownerId)) {
-            throw new CommentNotAllowedException("Commenting on item id: " + item.getId() + " is not allowed for owner id: " + ownerId);
+            throw new CommentNotAllowedException("User id: " + ownerId + " is owner  item id: " + item.getId());
         }
     }
 }

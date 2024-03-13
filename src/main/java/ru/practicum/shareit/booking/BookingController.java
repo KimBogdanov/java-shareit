@@ -16,48 +16,101 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 public class BookingController {
+    private final String userIdHeader = "X-Sharer-User-Id";
     private final BookingService bookingService;
 
+    /**
+     * Добавление бронирования для item.
+     *
+     * @param bookerId         Идентификатор пользователя, который создает booking.
+     * @param bookingCreateDto Объект {@link BookingCreateDto} описывающий бронирование.
+     * @return Объект {@link BookingReadDto} предоставляющий сохраненный booking.
+     */
     @PostMapping
-    public BookingReadDto saveBooking(@RequestHeader("X-Sharer-User-Id") Long bookerId,
+    public BookingReadDto saveBooking(@RequestHeader(userIdHeader) Long bookerId,
                                       @Valid @RequestBody BookingCreateDto bookingCreateDto) {
         log.info("Save booking id item: {}", bookingCreateDto.getItemId());
         return bookingService.saveBooking(bookerId, bookingCreateDto);
     }
 
+    /**
+     * Изменение статуса бронирования.
+     *
+     * @param ownerId   Идентификатор user, владельца бронируемыой Item.
+     * @param bookingId Идентификатор booking, статус которого изменяет метод.
+     * @param approved  Boolean подтверждающий или отменяющий бронирование
+     * @return Объект {@link BookingReadDto} предоставляющий booking.
+     */
     @PatchMapping("/{bookingId}")
-    public BookingReadDto approvedBooking(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+    public BookingReadDto approvedBooking(@RequestHeader(userIdHeader) Long ownerId,
                                           @PathVariable Long bookingId,
                                           @RequestParam boolean approved) {
         log.info("Booking id: {} is {} owner id: {}", bookingId, approved, ownerId);
         return bookingService.approvedBooking(ownerId, bookingId, approved);
     }
 
+    /**
+     * Получение booking по идентификатору.
+     *
+     * @param userId    Идентификатор user, который запрашивает booking.
+     * @param bookingId Идентификатор запрашиваемого booking.
+     * @return Объект {@link BookingReadDto} предоставляющий booking.
+     */
     @GetMapping("/{bookingId}")
-    public BookingReadDto getStatus(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingReadDto getStatus(@RequestHeader(userIdHeader) Long userId,
                                     @PathVariable Long bookingId) {
         log.info("Get status bookingId: {} User id: {}", bookingId, userId);
         return bookingService.getStatus(userId, bookingId);
     }
 
+    /**
+     * Получение списка booking для берущего в аренду.
+     *
+     * @param userId Идентификатор user, который создавал booking.
+     * @param state  Значение фильтра для возвращаемых объектов.
+     * @param from   Начальный индекс для постраничного результата (по умолцанию 0).
+     * @param size   Максимальное количество booking на странице (по умолчанию 10).
+     * @return Списаок объектов {@link BookingReadDto} предоставляющий booking.
+     */
     @GetMapping()
-    public List<BookingReadDto> getBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                            @RequestParam(required = false, defaultValue = "ALL") String state) {
+    public List<BookingReadDto> getAllBookingsForBooker(@RequestHeader(userIdHeader) Long userId,
+                                                        @RequestParam(required = false, defaultValue = "ALL") String state,
+                                                        @RequestParam(defaultValue = "0") Integer from,
+                                                        @RequestParam(defaultValue = "10") Integer size) {
         log.info("GetBookings user id: {}, state: {}", userId, state);
         Status status = getStatus(state);
-        return bookingService.getBookings(userId, status);
+        checkRequestParamAndThrowException(from, size);
+        return bookingService.getAllBookingsForBooker(userId, status, from, size);
     }
 
+    /**
+     * Получение списка booking для владельца вещей.
+     *
+     * @param ownerId Идентификатор user, владелец бронированных вещей.
+     * @param state   Значение фильтра для возвращаемых объектов.
+     * @param from    Начальный индекс для постраничного результата (по умолцанию 0).
+     * @param size    Максимальное количество booking на странице (по умолчанию 10).
+     * @return Списаок объектов {@link BookingReadDto} предоставляющий booking.
+     */
     @GetMapping("/owner")
-    public List<BookingReadDto> getBookingItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                               @RequestParam(required = false, defaultValue = "ALL") String state) {
+    public List<BookingReadDto> getBookingsForOwnerItem(@RequestHeader(userIdHeader) Long ownerId,
+                                                        @RequestParam(required = false, defaultValue = "ALL") String state,
+                                                        @RequestParam(defaultValue = "0") Integer from,
+                                                        @RequestParam(defaultValue = "10") Integer size) {
         log.info("GetBookingItem for owner id: {}, state: {}", ownerId, state);
         Status status = getStatus(state);
-        return bookingService.getBookingItem(ownerId, status);
+        checkRequestParamAndThrowException(from, size);
+        return bookingService.getBookingsForOwnerItem(ownerId, status, from, size);
     }
 
     private static Status getStatus(String state) {
         return Status.check(state)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + state));
+    }
+
+    private static void checkRequestParamAndThrowException(Integer from, Integer size) {
+        if (from < 0 || size < 1) {
+            throw new IllegalArgumentException("Request param incorrect");
+        }
     }
 }

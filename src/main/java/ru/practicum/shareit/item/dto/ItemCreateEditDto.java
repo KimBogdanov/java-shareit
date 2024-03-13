@@ -8,7 +8,8 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @Builder
-public class ItemDto {
+@NoArgsConstructor
+public class ItemCreateEditDto {
     private Long id;
     @NotBlank
     private String name;
@@ -16,7 +17,5 @@ public class ItemDto {
     private String description;
     @NotNull
     private Boolean available;
-
-    public ItemDto() {
-    }
+    private Long requestId;
 }

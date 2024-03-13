@@ -12,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Builder
 public class ItemReadDto {
-    private final long id;
+    private final Long id;
     private final String name;
     private final String description;
     private final boolean available;

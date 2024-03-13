@@ -183,6 +183,16 @@
 					<version>0.8.8</version>
 					<configuration>
 						<output>file</output>
+						<excludes>
+							<exclude>**/*ExceptionHandlerApi.class</exclude>
+							<exclude>**/*BookingMapperImpl.class</exclude>
+							<exclude>**/*ItemCreateEditMapperImpl.class</exclude>
+							<exclude>**/*ItemBookingMapperImpl.class</exclude>
+							<exclude>**/*CommentMapperImpl.class</exclude>
+							<exclude>**/*CommentReadMapperImpl.class</exclude>
+							<exclude>**/*ItemRequestCreatMapperImpl.class</exclude>
+							<exclude>**/*ItemRequestInfoMapperImpl.class</exclude>
+						</excludes>
 					</configuration>
 					<executions>
 						<execution>
