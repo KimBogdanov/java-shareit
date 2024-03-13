@@ -8,7 +8,6 @@ import ru.practicum.shareit.booking.dto.BookingReadDto;
 import ru.practicum.shareit.booking.model.enums.Status;
 import ru.practicum.shareit.booking.service.BookingService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -28,7 +27,7 @@ public class BookingController {
      */
     @PostMapping
     public BookingReadDto saveBooking(@RequestHeader(userIdHeader) Long bookerId,
-                                      @Valid @RequestBody BookingCreateDto bookingCreateDto) {
+                                      @RequestBody BookingCreateDto bookingCreateDto) {
         log.info("Save booking id item: {}", bookingCreateDto.getItemId());
         return bookingService.saveBooking(bookerId, bookingCreateDto);
     }
@@ -79,7 +78,6 @@ public class BookingController {
                                                         @RequestParam(defaultValue = "10") Integer size) {
         log.info("GetBookings user id: {}, state: {}", userId, state);
         Status status = getStatus(state);
-        checkRequestParamAndThrowException(from, size);
         return bookingService.getAllBookingsForBooker(userId, status, from, size);
     }
 
@@ -99,18 +97,10 @@ public class BookingController {
                                                         @RequestParam(defaultValue = "10") Integer size) {
         log.info("GetBookingItem for owner id: {}, state: {}", ownerId, state);
         Status status = getStatus(state);
-        checkRequestParamAndThrowException(from, size);
         return bookingService.getBookingsForOwnerItem(ownerId, status, from, size);
     }
-
     private static Status getStatus(String state) {
         return Status.check(state)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + state));
-    }
-
-    private static void checkRequestParamAndThrowException(Integer from, Integer size) {
-        if (from < 0 || size < 1) {
-            throw new IllegalArgumentException("Request param incorrect");
-        }
     }
 }

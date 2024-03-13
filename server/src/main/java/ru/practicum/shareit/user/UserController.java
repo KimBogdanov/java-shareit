@@ -7,7 +7,6 @@ import ru.practicum.shareit.user.dto.UserCreateUpdateDto;
 import ru.practicum.shareit.user.dto.UserReadDto;
 import ru.practicum.shareit.user.service.UserService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -47,7 +46,7 @@ public class UserController {
      * @return Объект {@link UserReadDto}, представляющий данные пользователя.
      */
     @PostMapping()
-    public UserReadDto saveUser(@Valid @RequestBody UserCreateUpdateDto userCreateUpdateDto) {
+    public UserReadDto saveUser(@RequestBody UserCreateUpdateDto userCreateUpdateDto) {
         log.info("Save user name: {}", userCreateUpdateDto.getName());
         return userService.saveUser(userCreateUpdateDto);
     }

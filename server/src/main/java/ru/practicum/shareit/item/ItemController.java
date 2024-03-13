@@ -10,7 +10,6 @@ import ru.practicum.shareit.item.dto.ItemReadDto;
 import ru.practicum.shareit.item.dto.ItemCreateEditDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -31,7 +30,7 @@ public class ItemController {
      */
     @PostMapping
     public ItemCreateEditDto saveItem(@RequestHeader(userIdHeader) Long userId,
-                                      @Valid @RequestBody ItemCreateEditDto itemCreateEditDto) {
+                                      @RequestBody ItemCreateEditDto itemCreateEditDto) {
         log.info("Save item name: {}, owner id: {}", itemCreateEditDto.getName(), userId);
         return itemService.saveItem(itemCreateEditDto, userId);
     }
@@ -50,7 +49,6 @@ public class ItemController {
                                                  @RequestParam(defaultValue = "0") Integer from,
                                                  @RequestParam(defaultValue = "10") Integer size) {
         log.info("Get all the user's items. User id: {}", userId);
-        checkRequestParamAndThrowException(from, size);
         return itemService.findAllItemsByUserId(userId, from, size);
     }
 
@@ -83,7 +81,6 @@ public class ItemController {
                                                @RequestParam(defaultValue = "0") Integer from,
                                                @RequestParam(defaultValue = "10") Integer size) {
         log.info("User: {} search item by string: {}", userId, text);
-        checkRequestParamAndThrowException(from, size);
         return itemService.searchByString(text, userId, from, size);
     }
 
@@ -114,14 +111,8 @@ public class ItemController {
     @PostMapping({"/{itemId}/comment"})
     public CommentReadDto saveComment(@RequestHeader(userIdHeader) Long userId,
                                       @PathVariable Long itemId,
-                                      @Valid @RequestBody CommentCreateDto commentCreateDto) {
+                                      @RequestBody CommentCreateDto commentCreateDto) {
         log.info("Save comment item id");
         return commentService.saveComment(userId, itemId, commentCreateDto);
-    }
-
-    private static void checkRequestParamAndThrowException(Integer from, Integer size) {
-        if (from < 0 || size < 1) {
-            throw new IllegalArgumentException("Request param incorrect");
-        }
     }
 }
