@@ -8,7 +8,6 @@ import ru.practicum.shareit.user.dto.UserCreateUpdateDto;
 import ru.practicum.shareit.user.dto.UserReadDto;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Slf4j
 @RestController
