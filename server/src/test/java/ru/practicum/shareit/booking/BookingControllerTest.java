@@ -177,6 +177,7 @@ class BookingControllerTest {
         Mockito.verify(bookingService, Mockito.times(1))
                 .getAllBookingsForBooker(bookerId, state, from, size);
     }
+
     @Test
     @SneakyThrows
     @DisplayName("Получение всех bookings по bookerId с некорректным state")
