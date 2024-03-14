@@ -77,8 +77,7 @@ public class BookingController {
                                                         @RequestParam(defaultValue = "0") Integer from,
                                                         @RequestParam(defaultValue = "10") Integer size) {
         log.info("GetBookings user id: {}, state: {}", userId, state);
-        Status status = getStatus(state);
-        return bookingService.getAllBookingsForBooker(userId, status, from, size);
+        return bookingService.getAllBookingsForBooker(userId, Status.valueOf(state.toUpperCase()), from, size);
     }
 
     /**
@@ -96,12 +95,6 @@ public class BookingController {
                                                         @RequestParam(defaultValue = "0") Integer from,
                                                         @RequestParam(defaultValue = "10") Integer size) {
         log.info("GetBookingItem for owner id: {}, state: {}", ownerId, state);
-        Status status = getStatus(state);
-        return bookingService.getBookingsForOwnerItem(ownerId, status, from, size);
-    }
-
-    private static Status getStatus(String state) {
-        return Status.check(state)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + state));
+        return bookingService.getBookingsForOwnerItem(ownerId, Status.valueOf(state.toUpperCase()), from, size);
     }
 }

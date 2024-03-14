@@ -180,28 +180,6 @@ class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    @DisplayName("Получение всех bookings по bookerId с некорректным state")
-    void getAllBookingsForBookerWithIncorrectState() {
-        Long bookerId = 1L;
-        int from = 0;
-        int size = 1;
-        String state = "incorrect";
-
-        mockMvc.perform(get("/bookings")
-                        .header(userIdHeader, bookerId)
-                        .param("from", Integer.toString(from))
-                        .param("size", Integer.toString(size))
-                        .param("state", state))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Unknown state: " + state))
-                .andExpect(jsonPath("$.description").value("Illegal Argument Exception"));
-
-        Mockito.verify(bookingService, Mockito.never())
-                .getAllBookingsForBooker(anyLong(), any(Status.class), anyInt(), anyInt());
-    }
-
-    @Test
-    @SneakyThrows
     @DisplayName("Получение всех bookings по ownerId")
     void getAllBookingsForOwner() {
         Long ownerId = 1L;
@@ -236,28 +214,6 @@ class BookingControllerTest {
 
         Mockito.verify(bookingService, Mockito.times(1))
                 .getBookingsForOwnerItem(ownerId, state, from, size);
-    }
-
-    @Test
-    @SneakyThrows
-    @DisplayName("Получение всех bookings по ownerId с некорректным state")
-    void getAllBookingsForOwnerWithIncorrectState() {
-        Long ownerId = 1L;
-        int from = 0;
-        int size = 1;
-        String state = "incorrect";
-
-        mockMvc.perform(get("/bookings/owner")
-                        .header(userIdHeader, ownerId)
-                        .param("from", Integer.toString(from))
-                        .param("size", Integer.toString(size))
-                        .param("state", state))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Unknown state: " + state))
-                .andExpect(jsonPath("$.description").value("Illegal Argument Exception"));
-
-        Mockito.verify(bookingService, Mockito.never())
-                .getBookingsForOwnerItem(anyLong(), any(Status.class), anyInt(), anyInt());
     }
 
     private static BookingCreateDto getBookingCreateDto(LocalDateTime startTime, LocalDateTime endTime, Long itemId) {
