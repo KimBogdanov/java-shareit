@@ -54,7 +54,7 @@ public class UserController {
     /**
      * Редактирование данных пользователя.
      *
-     * @param userId Идентификатор пользователя которого необходимо изменить.
+     * @param userId              Идентификатор пользователя которого необходимо изменить.
      * @param userCreateUpdateDto Объект {@link UserCreateUpdateDto}, содержащий поля для редактирования.
      * @return Объект {@link UserReadDto}, представляющий отредактированного пользователя.
      */

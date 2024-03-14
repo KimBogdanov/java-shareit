@@ -99,6 +99,7 @@ public class BookingController {
         Status status = getStatus(state);
         return bookingService.getBookingsForOwnerItem(ownerId, status, from, size);
     }
+
     private static Status getStatus(String state) {
         return Status.check(state)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + state));
