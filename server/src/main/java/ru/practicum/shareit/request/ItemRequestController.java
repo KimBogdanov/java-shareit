@@ -8,7 +8,6 @@ import ru.practicum.shareit.request.dto.ItemRequestInfoDto;
 import ru.practicum.shareit.request.dto.ItemRequestReadDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -21,7 +20,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ItemRequestReadDto saveItemRequest(@RequestHeader(userIdHeader) Long requesterId,
-                                              @Valid @RequestBody ItemRequestCreatDto dto) {
+                                              @RequestBody ItemRequestCreatDto dto) {
         log.info("SaveItemRequest user id: {}, request description {}", requesterId, dto.getDescription());
         return itemRequestService.save(dto, requesterId);
     }
@@ -34,11 +33,9 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestInfoDto> getAllRequests(@RequestHeader(userIdHeader) Long userId,
-                                                      @RequestParam(defaultValue = "0") Integer from,
-                                                      @RequestParam(defaultValue = "10") Integer size) {
+                                                   @RequestParam(defaultValue = "0") Integer from,
+                                                   @RequestParam(defaultValue = "10") Integer size) {
         log.info("getAllRequestItem user id {}, from: {}, size: {}", userId, from, size);
-        checkRequestParamAndThrowException(from, size);
-
         return itemRequestService.getAllRequestItem(userId, from, size);
     }
 
@@ -47,12 +44,6 @@ public class ItemRequestController {
                                                     @PathVariable Long requestId) {
         log.info("getItemRequestInfoDto user id: {}, request id: {}", userId, requestId);
         return itemRequestService.getItemRequestById(userId, requestId);
-    }
-
-    private static void checkRequestParamAndThrowException(Integer from, Integer size) {
-        if (from < 0 || size < 1) {
-            throw new IllegalArgumentException("Request param incorrect");
-        }
     }
 }
 
