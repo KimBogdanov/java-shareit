@@ -77,98 +77,6 @@ class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    @DisplayName("Добавление booking без указния Start")
-    void saveBookingWithoutStart() {
-        Long bookerId = 1L;
-        Long itemId = 1L;
-        LocalDateTime endTime = LocalDateTime.parse(end);
-        BookingCreateDto bookingCreateDto = getBookingCreateDto(null, endTime, itemId);
-        mockMvc.perform(post("/bookings")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(bookingCreateDto))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(userIdHeader, bookerId))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
-    }
-
-    @Test
-    @SneakyThrows
-    @DisplayName("Добавление booking без указния End")
-    void saveBookingWithoutEnd() {
-        Long bookerId = 1L;
-        Long itemId = 1L;
-        LocalDateTime startTime = LocalDateTime.parse(start);
-        BookingCreateDto bookingCreateDto = getBookingCreateDto(startTime, null, itemId);
-        mockMvc.perform(post("/bookings")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(bookingCreateDto))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(userIdHeader, bookerId))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
-    }
-
-    @Test
-    @SneakyThrows
-    @DisplayName("Добавление booking без указния ItemId")
-    void saveBookingWithoutItemId() {
-        Long bookerId = 1L;
-        LocalDateTime startTime = LocalDateTime.parse(start);
-        LocalDateTime endTime = LocalDateTime.parse(end);
-        BookingCreateDto bookingCreateDto = getBookingCreateDto(startTime, endTime, null);
-        mockMvc.perform(post("/bookings")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(bookingCreateDto))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(userIdHeader, bookerId))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
-    }
-
-    @Test
-    @SneakyThrows
-    @DisplayName("Добавление booking Start в прошлом")
-    void saveBookingStartInThePast() {
-        Long bookerId = 1L;
-        Long itemId = 1L;
-        LocalDateTime startTime = LocalDateTime.parse("2020-03-11T11:44:51.000000000");
-        LocalDateTime endTime = LocalDateTime.parse(end);
-        BookingCreateDto bookingCreateDto = getBookingCreateDto(startTime, endTime, itemId);
-        mockMvc.perform(post("/bookings")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(bookingCreateDto))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(userIdHeader, bookerId))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
-    }
-
-    @Test
-    @SneakyThrows
-    @DisplayName("Добавление booking End раньше Start")
-    void saveBookingEndEarlyStart() {
-        Long bookerId = 1L;
-        Long itemId = 1L;
-        LocalDateTime startTime = LocalDateTime.parse(end);
-        LocalDateTime endTime = LocalDateTime.parse(start);
-        BookingCreateDto bookingCreateDto = getBookingCreateDto(startTime, endTime, itemId);
-        mockMvc.perform(post("/bookings")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(bookingCreateDto))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(userIdHeader, bookerId))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
-    }
-
-    @Test
-    @SneakyThrows
     @DisplayName("Подтверждение статуса booking")
     void approvedBooking() {
         Long bookerId = 1L;
@@ -269,29 +177,6 @@ class BookingControllerTest {
         Mockito.verify(bookingService, Mockito.times(1))
                 .getAllBookingsForBooker(bookerId, state, from, size);
     }
-
-    @Test
-    @SneakyThrows
-    @DisplayName("Получение всех bookings по bookerId с некорректным from")
-    void getAllBookingsForBookerWithIncorrectReqParam() {
-        Long bookerId = 1L;
-        Integer from = -1;
-        Integer size = 1;
-        Status state = Status.ALL;
-
-        mockMvc.perform(get("/bookings")
-                        .header(userIdHeader, bookerId)
-                        .param("from", from.toString())
-                        .param("size", size.toString())
-                        .param("state", state.toString()))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Request param incorrect"))
-                .andExpect(jsonPath("$.description").value("Illegal Argument Exception"));
-
-        Mockito.verify(bookingService, Mockito.never())
-                .getAllBookingsForBooker(bookerId, state, from, size);
-    }
-
     @Test
     @SneakyThrows
     @DisplayName("Получение всех bookings по bookerId с некорректным state")
@@ -349,28 +234,6 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.[0].status").value(bookingReadDto.getStatus().toString()));
 
         Mockito.verify(bookingService, Mockito.times(1))
-                .getBookingsForOwnerItem(ownerId, state, from, size);
-    }
-
-    @Test
-    @SneakyThrows
-    @DisplayName("Получение всех bookings по ownerId с некорректным from")
-    void getAllBookingsForOwnerWithIncorrectReqParam() {
-        Long ownerId = 1L;
-        Integer from = -1;
-        Integer size = 1;
-        Status state = Status.ALL;
-
-        mockMvc.perform(get("/bookings/owner")
-                        .header(userIdHeader, ownerId)
-                        .param("from", from.toString())
-                        .param("size", size.toString())
-                        .param("state", state.toString()))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Request param incorrect"))
-                .andExpect(jsonPath("$.description").value("Illegal Argument Exception"));
-
-        Mockito.verify(bookingService, Mockito.never())
                 .getBookingsForOwnerItem(ownerId, state, from, size);
     }
 

@@ -74,27 +74,6 @@ class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    @DisplayName("Получение всех item по userId с некоректными параметрами")
-    void getAllItemsByUserIdWithIncorrectFrom() {
-        Long userId = 2L;
-        int from = -1;
-        int size = 1;
-
-        mockMvc.perform(get("/items")
-                        .header(userIdHeader, userId)
-                        .param("from", Integer.toString(from))
-                        .param("size", Integer.toString(size)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Request param incorrect"))
-                .andExpect(jsonPath("$.description").value("Illegal Argument Exception"));
-
-
-        Mockito.verify(itemService, Mockito.never())
-                .findAllItemsByUserId(anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    @SneakyThrows
     @DisplayName("Получение item по id")
     void getItemById() {
         Long itemId = 1L;
@@ -149,28 +128,6 @@ class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    @DisplayName("Получение всех item по userId с некоректными параметрами")
-    void searchItemsWithIncorrectFrom() {
-        Long userId = 2L;
-        int from = -1;
-        int size = 1;
-
-        mockMvc.perform(get("/items/search")
-                        .header(userIdHeader, userId)
-                        .param("text", "text")
-                        .param("from", Integer.toString(from))
-                        .param("size", Integer.toString(size)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Request param incorrect"))
-                .andExpect(jsonPath("$.description").value("Illegal Argument Exception"));
-
-
-        Mockito.verify(itemService, Mockito.never())
-                .searchByString(anyString(), anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    @SneakyThrows
     @DisplayName("Получение всех item по userId без параметра text")
     void searchItemsWithoutParamText() {
         Long userId = 2L;
@@ -217,33 +174,6 @@ class ItemControllerTest {
         Mockito.verify(itemService, Mockito.times(1))
                 .saveItem(itemCreateEditDto, userId);
     }
-
-    @Test
-    @SneakyThrows
-    @DisplayName("Добавление item без имени")
-    void saveItemWithoutName() {
-        Long itemId = 1L;
-        Long requestId = 2L;
-        Long userId = 3L;
-        String description = "description";
-        ItemCreateEditDto itemCreateEditDto = getItemCreateEditDto(itemId, requestId, null, description);
-
-        when(itemService.saveItem(any(ItemCreateEditDto.class), anyLong()))
-                .thenReturn(itemCreateEditDto);
-
-        mockMvc.perform(post("/items")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(itemCreateEditDto))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(userIdHeader, userId))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
-
-        Mockito.verify(itemService, Mockito.never())
-                .saveItem(itemCreateEditDto, userId);
-    }
-
 
     @Test
     @SneakyThrows
@@ -307,28 +237,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.created").value(created.format(pattern)));
 
         Mockito.verify(commentService, Mockito.times(1))
-                .saveComment(userId, itemId, commentCreateDto);
-    }
-
-    @Test
-    @SneakyThrows
-    @DisplayName("Добавление comment без текста")
-    void saveCommentWithoutText() {
-        Long itemId = 1L;
-        Long userId = 3L;
-        CommentCreateDto commentCreateDto = CommentCreateDto.builder()
-                .text(null).build();
-
-        mockMvc.perform(post("/items/{itemId}/comment", itemId)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(commentCreateDto))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(userIdHeader, userId))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Method Argument Not Valid"));
-
-        Mockito.verify(commentService, Mockito.never())
                 .saveComment(userId, itemId, commentCreateDto);
     }
 
