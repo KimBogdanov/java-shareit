@@ -7,6 +7,8 @@ services:
   db:
     # образ, из которого должен быть запущен контейнер
     image: postgres:13.7-alpine
+    ports:
+      - "6541:5432"
     # volume и связанная с ним директория в контейнере
     volumes:
       - /var/lib/postgresql/data/
@@ -16,10 +18,12 @@ services:
       - POSTGRES_USER=shareit
       - POSTGRES_PASSWORD=shareit
 
-  web:
-    build: .
+  server:
+    build: server
+    image: server
+    container_name: server_shareit
     ports:
-      - "8080:8080"
+      - "9090:9090"
     # "зависит от",
     depends_on:
       - db
@@ -30,3 +34,14 @@ services:
       - POSTGRES_PASSWORD=shareit
       - DB_HOST=db
       - DB_PORT=5432
+
+  gateway:
+    build: gateway
+    image: gateway
+    container_name: gateway_shareit
+    ports:
+      - "8080:8080"
+    depends_on:
+      - server
+    environment:
+      - SERVER_URL=http://server:9090
